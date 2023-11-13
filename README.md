@@ -36,6 +36,10 @@ module Echo = struct
 end
 ```
 
+Custom lifecycle functions can be specified, but sensible defaults are
+available in the `Caravan.Handler.Default` module that you can include to get
+started quickly.
+
 ### Custom Transports
 
 When starting a Caravan server, we can also specify a transport module.
