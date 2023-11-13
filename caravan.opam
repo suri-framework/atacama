@@ -11,7 +11,7 @@ homepage: "https://github.com/leostera/caravan"
 bug-reports: "https://github.com/leostera/caravan/issues"
 depends: [
   "ocaml" {>= "5.0"}
-  "riot" {>= "0.0.1"}
+  "riot"
   "telemetry" {>= "0.0.1"}
   "dune" {>= "3.10"}
   "odoc" {with-doc}

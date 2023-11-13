@@ -19,7 +19,7 @@
  (description "Caravan is a modern, pure OCaml socket pool for Riot inspired by Thousand Island. It aims to be easy to understand and reason about, while also being at least as stable and performant as the alternatives.")
  (depends
    (ocaml (>= "5.0"))
-   (riot (>= "0.0.1"))
+   riot
    (telemetry (>= "0.0.1"))
    dune
    )
