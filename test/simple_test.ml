@@ -2,7 +2,7 @@
 
 open Riot
 
-module Echo : Caravan.Handler.Intf = struct
+module Echo = struct
   open Caravan.Handler
   include Caravan.Handler.Default
 

@@ -1,6 +1,7 @@
 module Telemetry = Telemetry
 module Socket = Socket
 module Handler = Handler
+module Transport = Transport
 open Riot
 
 let start_link ~port ?(acceptor_count = 100)
