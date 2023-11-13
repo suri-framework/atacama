@@ -3,16 +3,17 @@
 open Riot
 
 type state = {
+  buffer_size : int;
   socket : Net.listen_socket;
   transport : (module Transport.Intf);
   handler : (module Handler.Intf);
 }
 
 let rec accept_loop state =
-  let (Ok (conn, client_addr)) = Riot.Socket.accept state.socket in
+  let (Ok (conn, client_addr)) = Riot.Net.Socket.accept state.socket in
   Telemetry_.accepted_connection client_addr;
-  Logger.debug (fun f -> f "accepted connection");
-  let (Ok _pid) = Connection.start_link conn state.transport state.handler in
+  let conn = Socket.make conn state.transport state.buffer_size in
+  let (Ok _pid) = Connection.start_link conn state.handler () in
   accept_loop state
 
 let start_link state =
@@ -23,8 +24,11 @@ let start_link state =
   in
   Ok pid
 
-let child_spec ~socket (module T : Transport.Intf) (module H : Handler.Intf) =
-  let state = { socket; transport = (module T); handler = (module H) } in
+let child_spec ~socket ?(buffer_size = 128) (module T : Transport.Intf)
+    (module H : Handler.Intf) =
+  let state =
+    { socket; buffer_size; transport = (module T); handler = (module H) }
+  in
   Supervisor.child_spec ~start_link state
 
 module Sup = struct
@@ -36,7 +40,7 @@ module Sup = struct
   }
 
   let start_link { port; acceptor_count; transport_module; handler_module } =
-    let (Ok socket) = Riot.Socket.listen ~port () in
+    let (Ok socket) = Riot.Net.Socket.listen ~port () in
     Telemetry_.listening socket;
     let child_specs =
       List.init acceptor_count (fun _ ->

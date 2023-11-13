@@ -2,47 +2,47 @@ open Riot
 
 module type Intf = sig
   val listen :
-    ?opts:Riot.Socket.listen_opts ->
+    ?opts:Net.Socket.listen_opts ->
     port:int ->
     unit ->
-    (Net.listen_socket, [> `System_limit ]) Riot.Socket.result
+    (Net.listen_socket, [> `System_limit ]) Net.Socket.result
 
   val connect :
-    Net.Addr.stream_addr -> (Net.stream_socket, [> `Closed ]) Riot.Socket.result
+    Net.Addr.stream_addr -> (Net.stream_socket, [> `Closed ]) Net.Socket.result
 
   val accept :
-    ?timeout:Riot.Socket.timeout ->
+    ?timeout:Net.Socket.timeout ->
     Net.listen_socket ->
     ( Net.stream_socket * Net.Addr.stream_addr,
       [> `Closed | `Timeout | `System_limit ] )
-    Riot.Socket.result
+    Net.Socket.result
 
   val close : _ Net.socket -> unit
 
   val controlling_process :
     _ Net.socket ->
     new_owner:Pid.t ->
-    (unit, [> `Closed | `Not_owner ]) Riot.Socket.result
+    (unit, [> `Closed | `Not_owner ]) Net.Socket.result
 
   val receive :
-    ?timeout:Riot.Socket.timeout ->
+    ?timeout:Net.Socket.timeout ->
     len:int ->
     Net.stream_socket ->
-    (Bigstringaf.t, [> `Closed | `Timeout ]) Riot.Socket.result
+    (Bigstringaf.t, [> `Closed | `Timeout ]) Net.Socket.result
 
   val send :
-    Bigstringaf.t -> Net.stream_socket -> (int, [> `Closed ]) Riot.Socket.result
+    Bigstringaf.t -> Net.stream_socket -> (int, [> `Closed ]) Net.Socket.result
 
-  val handshake : Net.stream_socket -> (unit, [> `Closed ]) Riot.Socket.result
+  val handshake : Net.stream_socket -> (unit, [> `Closed ]) Net.Socket.result
 end
 
 module Tcp : Intf = struct
-  let listen = Riot.Socket.listen
-  let connect = Riot.Socket.connect
-  let accept = Riot.Socket.accept
-  let close = Riot.Socket.close
-  let controlling_process = Riot.Socket.controlling_process
-  let receive = Riot.Socket.receive
-  let send = Riot.Socket.send
+  let listen = Net.Socket.listen
+  let connect = Net.Socket.connect
+  let accept = Net.Socket.accept
+  let close = Net.Socket.close
+  let controlling_process = Net.Socket.controlling_process
+  let receive = Net.Socket.receive
+  let send = Net.Socket.send
   let handshake _socket = Ok ()
 end
