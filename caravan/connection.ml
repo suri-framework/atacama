@@ -2,22 +2,20 @@
 
 open Riot
 
-type 's state = { ctx : 's; socket : Socket.t; handler : (module Handler.Intf) }
+let rec loop : Socket.t -> 's Handler.t -> 's -> unit =
+ fun socket handler ctx ->
+  let (Ok data) = Socket.receive socket ~timeout:Net.Socket.Infinity in
+  match Handler.handle_data handler data socket ctx with
+  | Handler.Continue ctx -> loop socket handler ctx
 
-let rec loop state =
-  let (Ok data) = Socket.receive state.socket ~timeout:Net.Socket.Infinity in
-  let module H = (val state.handler : Handler.Intf) in
-  match H.handle_data data state.socket state.ctx with
-  | Handler.Continue ctx -> loop { state with ctx }
-
-let init ({ socket; handler = (module H : Handler.Intf); ctx } as state) =
+let init : Socket.t -> 's Handler.t -> 's -> unit =
+ fun socket handler ctx ->
   Logger.debug (fun f -> f "accepted connection");
   let (Ok socket) = Socket.handshake socket in
-  match H.handle_connection socket ctx with
-  | Handler.Continue ctx -> loop { state with ctx }
+  match Handler.handle_connection handler socket ctx with
+  | Handler.Continue ctx -> loop socket handler ctx
   | _ -> assert false
 
 let start_link socket handler ctx =
-  let state = { socket; handler; ctx } in
-  let pid = spawn_link (fun () -> init state) in
+  let pid = spawn_link (fun () -> init socket handler ctx) in
   Ok pid

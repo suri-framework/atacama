@@ -19,7 +19,7 @@ To start a Caravan server, you just specify a port to bind to, and a module
 that will handle the connections.
 
 ``` ocaml
-let (Ok pid) = Caravan.start_link ~port:2112 (module Echo) in
+let (Ok pid) = Caravan.start_link ~port:2112 (module Echo) initial_state in
 ```
 
 In this case, our `Echo` handler looks like this:
@@ -29,10 +29,12 @@ module Echo = struct
   open Caravan.Handler
   include Caravan.Handler.Default
 
+  type state = int
+
   let handle_data data socket state =
-    Logger.info (fun f -> f "echo: %s" (Bigstringaf.to_string data));
+    Logger.info (fun f -> f "[%d] echo: %s" state (Bigstringaf.to_string data));
     let (Ok _bytes) = Caravan.Socket.send socket data in
-    Continue state
+    Continue (state+1)
 end
 ```
 
