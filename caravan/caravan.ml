@@ -1,3 +1,4 @@
+module Logger = Logger
 module Telemetry = Telemetry
 module Socket = Socket
 module Handler = Handler

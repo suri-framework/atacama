@@ -10,7 +10,7 @@ type ('state, 'error) handler_result =
 module type Intf = sig
   type state
 
-  val handle_close : Socket.t -> state -> (state, 'error) handler_result
+  val handle_close : Socket.t -> state -> unit
   val handle_connection : Socket.t -> state -> (state, 'error) handler_result
 
   val handle_data :
@@ -24,7 +24,7 @@ module type Intf = sig
 end
 
 module Default = struct
-  let handle_close _sock state = Close state
+  let handle_close _sock _state = ()
   let handle_connection _sock state = Continue state
   let handle_data _data _sock state = Continue state
   let handle_error err _sock state = Error (state, err)
@@ -33,6 +33,10 @@ module Default = struct
 end
 
 type 's t = (module Intf with type state = 's)
+
+let handle_close (type s) (module H : Intf with type state = s) sock (state : s)
+    =
+  H.handle_close sock state
 
 let handle_connection (type s) (module H : Intf with type state = s) sock
     (state : s) =
