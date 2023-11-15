@@ -1,4 +1,0 @@
-(library
- (public_name caravan)
- (name caravan)
- (libraries riot telemetry))

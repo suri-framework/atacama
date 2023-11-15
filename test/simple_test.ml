@@ -3,8 +3,8 @@
 open Riot
 
 module Echo = struct
-  open Caravan.Handler
-  include Caravan.Handler.Default
+  open Atacama.Handler
+  include Atacama.Handler.Default
 
   type state = int
 
@@ -14,17 +14,19 @@ module Echo = struct
 
   let handle_data data socket state =
     Logger.info (fun f -> f "[%d] echo: %S" state (Bigstringaf.to_string data));
-    let (Ok _bytes) = Caravan.Socket.send socket data in
+    let (Ok _bytes) = Atacama.Socket.send socket data in
     Continue (state + 1)
 end
 
 let main () =
-  Riot.Net.Socket.Logger.set_log_level (Some Trace);
   Logger.set_log_level (Some Trace);
-  let (Ok _) = Logger.start ~print_source:true () in
+  let (Ok _) = Logger.start () in
   sleep 0.1;
-  Logger.info (fun f -> f "starting caravan");
-  let (Ok pid) = Caravan.start_link ~port:2112 (module Echo) 0 in
-  wait_pids [ pid ]
+  Logger.info (fun f -> f "starting atacama");
+  let (Ok pid) =
+    Atacama.start_link ~port:2112 ~acceptor_count:1 (module Echo) 0
+  in
+  wait_pids [ pid ];
+  Logger.info (fun f -> f "closing down")
 
 let () = Riot.run @@ main

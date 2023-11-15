@@ -1,3 +1,3 @@
 include Riot.Logger.Make (struct
-  let namespace = [ "caravan" ]
+  let namespace = [ "atacama" ]
 end)

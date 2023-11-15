@@ -12,6 +12,7 @@ type 'ctx state = {
 
 let rec accept_loop state =
   let (Ok (conn, client_addr)) = Riot.Net.Socket.accept state.socket in
+  Logger.debug (fun f -> f "Accepted connection: %a" Net.Addr.pp client_addr);
   Telemetry_.accepted_connection client_addr;
   let conn = Socket.make conn state.transport state.buffer_size in
   let (Ok _pid) = Connection.start_link conn state.handler state.initial_ctx in
@@ -41,6 +42,7 @@ module Sup = struct
   let start_link
       { port; acceptor_count; transport_module; handler_module; initial_ctx } =
     let (Ok socket) = Riot.Net.Socket.listen ~port () in
+    Logger.debug (fun f -> f "Listening on 0.0.0.0:%d" port);
     Telemetry_.listening socket;
     let child_specs =
       List.init acceptor_count (fun _ ->

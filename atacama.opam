@@ -2,13 +2,13 @@
 opam-version: "2.0"
 synopsis: "Modern, pure OCaml socket pool for Riot"
 description:
-  "Caravan is a modern, pure OCaml socket pool for Riot inspired by Thousand Island. It aims to be easy to understand and reason about, while also being at least as stable and performant as the alternatives."
+  "Atacama is a modern, pure OCaml socket pool for Riot inspired by Thousand Island. It aims to be easy to understand and reason about, while also being at least as stable and performant as the alternatives."
 maintainer: ["Leandro Ostera <leandro@abstractmachines.dev>"]
 authors: ["Leandro Ostera <leandro@abstractmachines.dev>"]
 license: "MIT"
 tags: ["topics" "socket" "socket pool" "riot"]
-homepage: "https://github.com/leostera/caravan"
-bug-reports: "https://github.com/leostera/caravan/issues"
+homepage: "https://github.com/leostera/atacama"
+bug-reports: "https://github.com/leostera/atacama/issues"
 depends: [
   "ocaml" {>= "5.0"}
   "riot"
@@ -30,4 +30,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/leostera/caravan.git"
+dev-repo: "git+https://github.com/leostera/atacama.git"
