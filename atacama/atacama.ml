@@ -1,5 +1,5 @@
 module Logger = Logger
-module Telemetry = Telemetry
+module Telemetry = Telemetry_
 module Socket = Socket
 module Handler = Handler
 module Transport = Transport

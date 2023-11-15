@@ -23,9 +23,7 @@ let main () =
   let (Ok _) = Logger.start () in
   sleep 0.1;
   Logger.info (fun f -> f "starting atacama");
-  let (Ok pid) =
-    Atacama.start_link ~port:2112 ~acceptor_count:1 (module Echo) 0
-  in
+  let (Ok pid) = Atacama.start_link ~port:2112 (module Echo) 0 in
   wait_pids [ pid ];
   Logger.info (fun f -> f "closing down")
 

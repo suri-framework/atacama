@@ -1,3 +1,0 @@
-(executable
- (name simple_test)
- (libraries atacama))
