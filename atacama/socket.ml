@@ -1,7 +1,7 @@
 open Riot
 
 type t = {
-  socket : Net.stream_socket;
+  socket : Net.Socket.stream_socket;
   transport : (module Transport.Intf);
   buffer_size : int;
 }

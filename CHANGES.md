@@ -1,5 +1,9 @@
 # Changes
 
+## 0.0.2
+
+* Update to work with Riot 0.0.3
+
 ## 0.0.1
 
 First release includes:

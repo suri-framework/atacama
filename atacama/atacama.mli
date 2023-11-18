@@ -94,41 +94,45 @@ module Transport : sig
       ?opts:Net.Socket.listen_opts ->
       port:int ->
       unit ->
-      (Net.listen_socket, [> `System_limit | `Unix_error of Unix.error ]) result
+      ( Net.Socket.listen_socket,
+        [> `System_limit | `Unix_error of Unix.error ] )
+      result
 
     val connect :
       Net.Addr.stream_addr ->
-      (Net.stream_socket, [> `Closed | `Unix_error of Unix.error ]) result
+      ( Net.Socket.stream_socket,
+        [> `Closed | `Unix_error of Unix.error ] )
+      result
 
     val accept :
       ?timeout:Net.Socket.timeout ->
-      Net.listen_socket ->
-      ( Net.stream_socket * Net.Addr.stream_addr,
+      Net.Socket.listen_socket ->
+      ( Net.Socket.stream_socket * Net.Addr.stream_addr,
         [> `Closed | `System_limit | `Timeout | `Unix_error of Unix.error ] )
       result
 
-    val close : 'a Net.socket -> unit
+    val close : 'a Net.Socket.socket -> unit
 
     val controlling_process :
-      'a Net.socket ->
+      'a Net.Socket.socket ->
       new_owner:Pid.t ->
       (unit, [> `Closed | `Not_owner | `Unix_error of Unix.error ]) result
 
     val receive :
       ?timeout:Net.Socket.timeout ->
       len:int ->
-      Net.stream_socket ->
+      Net.Socket.stream_socket ->
       ( Bigstringaf.t,
         [> `Closed | `Timeout | `Unix_error of Unix.error ] )
       result
 
     val send :
       Bigstringaf.t ->
-      Net.stream_socket ->
+      Net.Socket.stream_socket ->
       (int, [> `Closed | `Unix_error of Unix.error ]) result
 
     val handshake :
-      Net.stream_socket ->
+      Net.Socket.stream_socket ->
       (unit, [> `Closed | `Unix_error of Unix.error ]) result
   end
 
@@ -150,18 +154,11 @@ val start_link :
 
 *)
 
-module Logger : sig
-  val set_log_level : Riot__.Logger.level option -> unit
-  val debug : ('a, unit) logger_format -> unit
-  val error : ('a, unit) logger_format -> unit
-  val info : ('a, unit) logger_format -> unit
-  val trace : ('a, unit) logger_format -> unit
-  val warn : ('a, unit) logger_format -> unit
-end
+module Logger : Logger.Intf
 
 module Telemetry : sig
   type Telemetry.event +=
     | Accepted_connection of { client_addr : Net.Addr.stream_addr }
     | Connection_started
-    | Listening of { socket : Net.listen_socket }
+    | Listening of { socket : Net.Socket.listen_socket }
 end
