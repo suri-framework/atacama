@@ -6,6 +6,7 @@ type t = {
   buffer_size : int;
 }
 
+let pp ppf t = Format.fprintf ppf "Socket<%d>" (Obj.magic t.socket)
 let make socket transport buffer_size = { socket; transport; buffer_size }
 
 let handshake ({ socket; transport = (module T : Transport.Intf); _ } as t) =

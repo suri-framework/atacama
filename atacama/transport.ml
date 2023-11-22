@@ -47,11 +47,6 @@ module Tcp : Intf = struct
   let close = Net.Socket.close
   let controlling_process = Net.Socket.controlling_process
   let receive = Net.Socket.receive
-
-  let send data socket =
-    let res = Net.Socket.send data socket in
-    Logger.debug (fun f -> f "sent: %S" (Bigstringaf.to_string data));
-    res
-
+  let send = Net.Socket.send
   let handshake _socket = Ok ()
 end

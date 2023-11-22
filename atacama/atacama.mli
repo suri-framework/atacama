@@ -154,8 +154,6 @@ val start_link :
 
 *)
 
-module Logger : Logger.Intf
-
 module Telemetry : sig
   type Telemetry.event +=
     | Accepted_connection of { client_addr : Net.Addr.stream_addr }

@@ -14,4 +14,4 @@ let start_link ~port ?(acceptor_count = 100)
         ~handler_module initial_ctx;
     ]
   in
-  Supervisor.start_link ~child_specs ()
+  Supervisor.start_link ~restart_limit:10 ~child_specs ()
