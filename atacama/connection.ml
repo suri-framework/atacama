@@ -25,5 +25,10 @@ let init : Socket.t -> 's Handler.t -> 's -> unit =
   | _ -> ()
 
 let start_link socket handler ctx =
-  let pid = spawn_link (fun () -> init socket handler ctx) in
+  let pid =
+    spawn_link (fun () ->
+        Fun.protect
+          ~finally:(fun () -> Socket.close socket)
+          (fun () -> init socket handler ctx))
+  in
   Ok pid

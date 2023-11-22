@@ -19,3 +19,6 @@ let receive
 
 let send { socket; transport = (module T : Transport.Intf); _ } data =
   T.send data socket
+
+let close { socket; transport = (module T : Transport.Intf); _ } =
+  T.close socket
