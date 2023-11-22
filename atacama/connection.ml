@@ -2,9 +2,12 @@ open Riot
 
 let rec loop : Socket.t -> 's Handler.t -> 's -> unit =
  fun socket handler ctx ->
-  let[@warning "-8"] (Ok data) =
-    Socket.receive socket ~timeout:Net.Socket.Infinity
-  in
+  match Socket.receive socket ~timeout:Net.Socket.Infinity with
+  | Ok data -> handle_data socket handler ctx data
+  | Error err ->
+      Logger.error (fun f -> f "Error receiving data: %a" Net.Socket.pp_err err)
+
+and handle_data socket handler ctx data =
   Logger.debug (fun f -> f "Received data: %S" (Bigstringaf.to_string data));
   match Handler.handle_data handler data socket ctx with
   | Continue ctx -> loop socket handler ctx

@@ -11,7 +11,13 @@ type 'ctx state = {
 }
 
 let rec accept_loop state =
-  let (Ok (conn, client_addr)) = Net.Socket.accept state.socket in
+  match Net.Socket.accept state.socket with
+  | Ok (conn, client_addr) -> handle_conn state conn client_addr
+  | Error err ->
+      Logger.error (fun f ->
+          f "Error accepting connection: %a" Net.Socket.pp_err err)
+
+and handle_conn state conn client_addr =
   Logger.debug (fun f -> f "Accepted connection: %a" Net.Addr.pp client_addr);
   Telemetry_.accepted_connection client_addr;
   let conn = Socket.make conn state.transport state.buffer_size in
