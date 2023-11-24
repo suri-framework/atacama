@@ -1,5 +1,12 @@
 # Changes
 
+## 0.0.3
+
+* Move example to use Riot Applications
+* Started reference projects for benchmarking
+* Log socket accept/receive errors
+* Always attempt to close a socket
+
 ## 0.0.2
 
 * Update to work with Riot 0.0.3
