@@ -16,8 +16,9 @@ module Echo = struct
     let handle_data data socket state =
       Logger.info (fun f ->
           f "[%d] echo: %S" state (Bigstringaf.to_string data));
-      let (Ok _bytes) = Atacama.Socket.send socket data in
-      Continue (state + 1)
+      match Atacama.Socket.send socket data with
+      | Ok _bytes -> Continue (state + 1)
+      | Error _ -> Close state
   end
 
   let start () = Atacama.start_link ~port:2112 (module Server) 0

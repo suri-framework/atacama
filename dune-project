@@ -21,7 +21,6 @@
    (ocaml (>= "5.1"))
    (riot (>= "0.0.4"))
    (telemetry (>= "0.0.1"))
-   dune
-   )
+   dune)
  (tags
   (topics socket "socket pool" riot)))
