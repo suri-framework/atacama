@@ -20,7 +20,8 @@ let rec accept_loop state =
 and handle_conn state conn client_addr =
   Logger.debug (fun f -> f "Accepted connection: %a" Net.Addr.pp client_addr);
   Telemetry_.accepted_connection client_addr;
-  let conn = Socket.make conn state.transport state.buffer_size in
+  let buffer = Bigstringaf.create state.buffer_size in
+  let conn = Socket.make conn state.transport buffer in
   let (Ok _pid) = Connection.start_link conn state.handler state.initial_ctx in
   accept_loop state
 
@@ -32,7 +33,7 @@ let start_link state =
   in
   Ok pid
 
-let child_spec ~socket ?(buffer_size = 128) transport handler initial_ctx =
+let child_spec ~socket ?(buffer_size = 1024) transport handler initial_ctx =
   let state = { socket; buffer_size; transport; handler; initial_ctx } in
   Supervisor.child_spec ~start_link state
 

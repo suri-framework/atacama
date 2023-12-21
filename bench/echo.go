@@ -8,14 +8,14 @@ import (
 )
 
 func main() {
-	// Listen on TCP port 9090 on all interfaces.
-	l, err := net.Listen("tcp", ":9090")
+	// Listen on TCP port 2112 on all interfaces.
+	l, err := net.Listen("tcp", ":2112")
 	if err != nil {
 		fmt.Println("Error listening:", err.Error())
 		os.Exit(1)
 	}
 	defer l.Close()
-	fmt.Println("Listening on :9090")
+	fmt.Println("Listening on :2112")
 
 	for {
 		// Wait for a connection.

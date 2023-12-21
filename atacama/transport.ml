@@ -27,7 +27,7 @@ module type Intf = sig
 
   val receive :
     ?timeout:Net.Socket.timeout ->
-    len:int ->
+    buf:Bigstringaf.t ->
     Net.Socket.stream_socket ->
     (Bigstringaf.t, [> `Closed | `Timeout ]) Net.Socket.result
 
