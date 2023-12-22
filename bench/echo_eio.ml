@@ -24,7 +24,8 @@ let main ~net ~domain_mgr =
       Switch.run @@ fun sw ->
       Printf.printf "Listening :2112 from thread %d\n%!" tid;
       let listening_socket =
-        Eio.Net.listen net ~sw ~reuse_port:true ~reuse_addr:true ~backlog:100 addr
+        Eio.Net.listen net ~sw ~reuse_port:true ~reuse_addr:true ~backlog:100
+          addr
       in
       Server.run listening_socket)
   |> ignore

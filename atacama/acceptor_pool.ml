@@ -33,7 +33,7 @@ let start_link state =
   in
   Ok pid
 
-let child_spec ~socket ?(buffer_size = 1024) transport handler initial_ctx =
+let child_spec ~socket ?(buffer_size = 1_024 * 50) transport handler initial_ctx =
   let state = { socket; buffer_size; transport; handler; initial_ctx } in
   Supervisor.child_spec ~start_link state
 

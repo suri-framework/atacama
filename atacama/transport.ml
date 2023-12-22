@@ -29,10 +29,10 @@ module type Intf = sig
     ?timeout:Net.Socket.timeout ->
     buf:Bigstringaf.t ->
     Net.Socket.stream_socket ->
-    (Bigstringaf.t, [> `Closed | `Timeout ]) Net.Socket.result
+    (int, [> `Closed | `Timeout ]) Net.Socket.result
 
   val send :
-    Bigstringaf.t ->
+    data:Bigstringaf.t ->
     Net.Socket.stream_socket ->
     (int, [> `Closed ]) Net.Socket.result
 

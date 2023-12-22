@@ -122,12 +122,10 @@ module Transport : sig
       ?timeout:Net.Socket.timeout ->
       buf:Bigstringaf.t ->
       Net.Socket.stream_socket ->
-      ( Bigstringaf.t,
-        [> `Closed | `Timeout | `Unix_error of Unix.error ] )
-      result
+      (int, [> `Closed | `Timeout | `Unix_error of Unix.error ]) result
 
     val send :
-      Bigstringaf.t ->
+      data:Bigstringaf.t ->
       Net.Socket.stream_socket ->
       (int, [> `Closed | `Unix_error of Unix.error ]) result
 
