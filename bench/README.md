@@ -5,7 +5,7 @@ A small benchamrk of the throughput of echo TCP servers in OCaml+Atacama, OCaml+
 
 | name | 100conn/10s | 100conn/60s |
 |------|-------------|--------------|
-| Atacama | 73.4 Mbps | 70.7 Mbps |
+| Atacama | 95.6 Mbps | 104.1 Mbps |
 | Eio | 40.5 Mbps | 42.5 Mbps |
 | Erlang | 74.7 Mbps | 72.5 Mbps |
 | Elixir | 73.6 Mbps | 67.8 Mbps |
@@ -19,24 +19,24 @@ Destination: [0.0.0.0]:2112
 Interface lo0 address [127.0.0.1]:0
 Using interface lo0 to connect to [0.0.0.0]:2112
 Ramped up to 100 connections.
-Total data sent:     4390.0 MiB (4603229122 bytes)
-Total data received: 4368.5 MiB (4580696064 bytes)
-Bandwidth per channel: 73.466⇅ Mbps (9183.3 kBps)
-Aggregate bandwidth: 3664.300↓, 3682.325↑ Mbps
-Packet rate estimate: 329555.7↓, 342531.6↑ (6↓, 12↑ TCP MSS/op)
-Test duration: 10.0007 s.
+Total data sent:     5712.5 MiB (5990000216 bytes)
+Total data received: 5698.0 MiB (5974823936 bytes)
+Bandwidth per channel: 95.693⇅ Mbps (11961.6 kBps)
+Aggregate bandwidth: 4778.572↓, 4790.710↑ Mbps
+Packet rate estimate: 421254.6↓, 421441.7↑ (6↓, 12↑ TCP MSS/op)
+Test duration: 10.0027 s.
 
 ; tcpkali 0.0.0.0:2112 -m 'hello world' -c 100 -T 60s
 Destination: [0.0.0.0]:2112
 Interface lo0 address [127.0.0.1]:0
 Using interface lo0 to connect to [0.0.0.0]:2112
 Ramped up to 100 connections.
-Total data sent:     25308.2 MiB (26537551392 bytes)
-Total data received: 25296.4 MiB (26525146112 bytes)
-Bandwidth per channel: 70.738⇅ Mbps (8842.3 kBps)
-Aggregate bandwidth: 3536.095↓, 3537.749↑ Mbps
-Packet rate estimate: 316525.6↓, 304161.9↑ (6↓, 11↑ TCP MSS/op)
-Test duration: 60.01 s.
+Total data sent:     37277.4 MiB (39088165316 bytes)
+Total data received: 37251.8 MiB (39061298176 bytes)
+Bandwidth per channel: 104.198⇅ Mbps (13024.8 kBps)
+Aggregate bandwidth: 5208.130↓, 5211.713↑ Mbps
+Packet rate estimate: 492843.8↓, 454687.3↑ (7↓, 12↑ TCP MSS/op)
+Test duration: 60.0005 s.
 ```
 
 **Eio**
