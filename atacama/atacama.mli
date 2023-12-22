@@ -140,6 +140,7 @@ end
 val start_link :
   port:int ->
   ?acceptor_count:int ->
+  ?buffer_size:int ->
   ?transport_module:(module Transport.Intf) ->
   'ctx Handler.t ->
   'ctx ->

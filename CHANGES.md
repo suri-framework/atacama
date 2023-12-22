@@ -1,5 +1,13 @@
 # Changes
 
+## 0.0.4
+
+* Upgrade to Riot 0.0.6
+* Introduce benchmarks in Go, Elixir, Erlang, Eio, and Rust
+* Refactor Transport/Socket interfaces to reuse buffers
+* Add `echo_test` to verify integrity of data
+* Add working TCP echo server example
+
 ## 0.0.3
 
 * Move example to use Riot Applications

@@ -33,34 +33,51 @@ let start_link state =
   in
   Ok pid
 
-let child_spec ~socket ?(buffer_size = 1_024 * 50) transport handler initial_ctx =
+let child_spec ~socket ?(buffer_size = 1_024 * 50) transport handler initial_ctx
+    =
   let state = { socket; buffer_size; transport; handler; initial_ctx } in
   Supervisor.child_spec ~start_link state
 
 module Sup = struct
   type 'ctx state = {
-    port : int;
     acceptor_count : int;
-    transport_module : (module Transport.Intf);
+    buffer_size : int;
     handler_module : 'ctx Handler.t;
     initial_ctx : 'ctx;
+    port : int;
+    transport_module : (module Transport.Intf);
   }
 
   let start_link
-      { port; acceptor_count; transport_module; handler_module; initial_ctx } =
+      {
+        acceptor_count;
+        buffer_size;
+        handler_module;
+        initial_ctx;
+        port;
+        transport_module;
+      } =
     let (Ok socket) = Net.Socket.listen ~port () in
     Logger.debug (fun f -> f "Listening on 0.0.0.0:%d" port);
     Telemetry_.listening socket;
     let child_specs =
       List.init acceptor_count (fun _ ->
-          child_spec ~socket transport_module handler_module initial_ctx)
+          child_spec ~socket ~buffer_size transport_module handler_module
+            initial_ctx)
     in
     Supervisor.start_link ~child_specs ()
 
   let child_spec ~port ~acceptor_count ~transport_module ~handler_module
-      initial_ctx =
+      ~buffer_size initial_ctx =
     let state =
-      { acceptor_count; port; transport_module; handler_module; initial_ctx }
+      {
+        acceptor_count;
+        buffer_size;
+        handler_module;
+        initial_ctx;
+        port;
+        transport_module;
+      }
     in
     Supervisor.child_spec ~start_link state
 end

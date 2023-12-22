@@ -9,10 +9,6 @@ module Echo = struct
 
     type state = int
 
-    let handle_connection _socket state =
-      Logger.info (fun f -> f "[%d] new connection" state);
-      Continue (state + 1)
-
     let handle_data data socket state =
       Logger.info (fun f ->
           f "[%d] echo: %S" state (Bigstringaf.to_string data));
@@ -21,7 +17,10 @@ module Echo = struct
       | Error _ -> Close state
   end
 
-  let start () = Atacama.start_link ~port:2112 (module Server) 0
+  let start () =
+    Logger.set_log_level (Some Debug);
+    Atacama.start_link ~port:2112 (module Server) 0
+
   let name = "echo_server"
 end
 

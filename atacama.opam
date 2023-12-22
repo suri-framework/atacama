@@ -6,14 +6,14 @@ description:
 maintainer: ["Leandro Ostera <leandro@abstractmachines.dev>"]
 authors: ["Leandro Ostera <leandro@abstractmachines.dev>"]
 license: "MIT"
-tags: ["topics" "socket" "socket pool" "riot"]
+tags: ["socket" "socket pool" "tcp" "riot"]
 homepage: "https://github.com/leostera/atacama"
 bug-reports: "https://github.com/leostera/atacama/issues"
 depends: [
+  "dune" {>= "3.11"}
   "ocaml" {>= "5.1"}
-  "riot" {>= "0.0.4"}
+  "riot" {>= "0.0.6"}
   "telemetry" {>= "0.0.1"}
-  "dune" {>= "3.10"}
   "odoc" {with-doc}
 ]
 build: [

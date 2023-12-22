@@ -7,10 +7,6 @@ module Echo = struct
 
     type state = int
 
-    let handle_connection _socket state =
-      Logger.info (fun f -> f "[%d] new connection" state);
-      Continue (state + 1)
-
     let handle_data data socket state =
       match Atacama.Socket.send socket data with
       | Ok _bytes -> Continue (state + 1)

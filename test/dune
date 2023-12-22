@@ -1,0 +1,3 @@
+(tests
+ (names echo_test)
+ (libraries atacama))
