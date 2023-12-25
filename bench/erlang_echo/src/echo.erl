@@ -10,8 +10,8 @@ main(_) ->
     Port =2112,
     {ok, _} = ranch:start_listener(tcp_echo,
 		ranch_tcp, #{
-                 socket_opts => [{port, Port}],
-                 num_acceptors =>  100,
+                 socket_opts => [{port, Port}, {recbuf, 1024 * 50}],
+                 num_acceptors =>  100
                 },
 		echo, []),
     io:format("TCP Echo Server running on port ~p~n", [Port]),

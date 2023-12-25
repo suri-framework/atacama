@@ -14,7 +14,7 @@ module type Intf = sig
   val handle_connection : Socket.t -> state -> (state, 'error) handler_result
 
   val handle_data :
-    Bigstringaf.t -> Socket.t -> state -> (state, 'error) handler_result
+    IO.Buffer.t -> Socket.t -> state -> (state, 'error) handler_result
 
   val handle_error :
     'error -> Socket.t -> state -> (state, 'error) handler_result

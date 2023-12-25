@@ -12,6 +12,6 @@ defmodule Echo do
   end
 end
 
-{:ok, pid} = ThousandIsland.start_link(port: 2112, handler_module: Echo)
+{:ok, pid} = ThousandIsland.start_link(port: 2112, handler_module: Echo, transport_options: [ recbuf: 1024 * 50 ])
 
 Process.sleep(:infinity)

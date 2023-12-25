@@ -2,7 +2,7 @@
 
 ## 0.0.4
 
-* Upgrade to Riot 0.0.6
+* Upgrade to Riot 0.0.7
 * Introduce benchmarks in Go, Elixir, Erlang, Eio, and Rust
 * Refactor Transport/Socket interfaces to reuse buffers
 * Add `echo_test` to verify integrity of data

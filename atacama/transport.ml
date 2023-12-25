@@ -5,39 +5,39 @@ module type Intf = sig
     ?opts:Net.Socket.listen_opts ->
     port:int ->
     unit ->
-    (Net.Socket.listen_socket, [> `System_limit ]) Net.Socket.result
+    (Net.Socket.listen_socket, [> `System_limit ]) IO.result
 
   val connect :
     Net.Addr.stream_addr ->
-    (Net.Socket.stream_socket, [> `Closed ]) Net.Socket.result
+    (Net.Socket.stream_socket, [> `Closed ]) IO.result
 
   val accept :
     ?timeout:Net.Socket.timeout ->
     Net.Socket.listen_socket ->
     ( Net.Socket.stream_socket * Net.Addr.stream_addr,
       [> `Closed | `Timeout | `System_limit ] )
-    Net.Socket.result
+    IO.result
 
   val close : _ Net.Socket.socket -> unit
 
   val controlling_process :
     _ Net.Socket.socket ->
     new_owner:Pid.t ->
-    (unit, [> `Closed | `Not_owner ]) Net.Socket.result
+    (unit, [> `Closed | `Not_owner ]) IO.result
 
   val receive :
     ?timeout:Net.Socket.timeout ->
-    buf:Bigstringaf.t ->
+    buf:IO.Buffer.t ->
     Net.Socket.stream_socket ->
-    (int, [> `Closed | `Timeout ]) Net.Socket.result
+    (int, [> `Closed | `Timeout ]) IO.result
 
   val send :
-    data:Bigstringaf.t ->
+    data:IO.Buffer.t ->
     Net.Socket.stream_socket ->
-    (int, [> `Closed ]) Net.Socket.result
+    (int, [> `Closed ]) IO.result
 
   val handshake :
-    Net.Socket.stream_socket -> (unit, [> `Closed ]) Net.Socket.result
+    Net.Socket.stream_socket -> (unit, [> `Closed ]) IO.result
 end
 
 module Tcp : Intf = struct

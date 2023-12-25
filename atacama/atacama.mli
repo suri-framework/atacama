@@ -8,10 +8,10 @@ module Socket : sig
   val receive :
     t ->
     timeout:Net.Socket.timeout ->
-    (Bigstringaf.t, [> `Closed | `Timeout | `Unix_error of Unix.error ]) result
+    (IO.Buffer.t, [> `Closed | `Timeout | `Unix_error of Unix.error ]) result
 
   val send :
-    t -> Bigstringaf.t -> (int, [> `Closed | `Unix_error of Unix.error ]) result
+    t -> IO.Buffer.t -> (int, [> `Closed | `Unix_error of Unix.error ]) result
 end
 
 (** An Atacama Handler determines how every connection handled by Atacama will
@@ -48,7 +48,7 @@ module Handler : sig
     val handle_connection : Socket.t -> state -> (state, 'error) handler_result
 
     val handle_data :
-      Bigstringaf.t -> Socket.t -> state -> (state, 'error) handler_result
+      IO.Buffer.t -> Socket.t -> state -> (state, 'error) handler_result
 
     val handle_error :
       'error -> Socket.t -> state -> (state, 'error) handler_result
@@ -76,7 +76,7 @@ module Handler : sig
       Socket.t -> 'state -> ('state, 'error) handler_result
 
     val handle_data :
-      Bigstringaf.t -> Socket.t -> 'state -> ('state, 'error) handler_result
+      IO.Buffer.t -> Socket.t -> 'state -> ('state, 'error) handler_result
 
     val handle_error :
       'error -> Socket.t -> 'state -> ('state, 'error) handler_result
@@ -120,12 +120,12 @@ module Transport : sig
 
     val receive :
       ?timeout:Net.Socket.timeout ->
-      buf:Bigstringaf.t ->
+      buf:IO.Buffer.t ->
       Net.Socket.stream_socket ->
       (int, [> `Closed | `Timeout | `Unix_error of Unix.error ]) result
 
     val send :
-      data:Bigstringaf.t ->
+      data:IO.Buffer.t ->
       Net.Socket.stream_socket ->
       (int, [> `Closed | `Unix_error of Unix.error ]) result
 

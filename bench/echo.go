@@ -36,7 +36,7 @@ func handleRequest(conn net.Conn) {
 	defer conn.Close()
 
 	// Create a buffer to hold the received data.
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 1024 * 50)
 
 	for {
 		// Read the incoming data into the buffer.

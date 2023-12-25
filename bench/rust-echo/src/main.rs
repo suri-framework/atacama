@@ -4,13 +4,13 @@ use tokio::spawn;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let listener = TcpListener::bind("127.0.0.1:2112").await?;
+    let listener = TcpListener::bind("0.0.0.0:2112").await?;
 
     loop {
         let (mut socket, _) = listener.accept().await?;
 
         spawn(async move {
-            let mut buf = [0; 1024];
+            let mut buf = [0; 1024 * 50];
 
             // In a loop, read data from the socket and write the data back.
             loop {
