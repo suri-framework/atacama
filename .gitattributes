@@ -1,4 +1,1 @@
-bench/echo.go linguist-vendored
-bench/rust-echo linguist-vendored
-bench/erlang-echo linguist-vendored
-bench/echo.exs linguist-vendored
+bench/* linguist-vendored

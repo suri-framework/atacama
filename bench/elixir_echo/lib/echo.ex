@@ -1,7 +1,3 @@
-Mix.install([:thousand_island])
-
-require Logger
-
 defmodule Echo do
   use ThousandIsland.Handler
 
@@ -11,7 +7,3 @@ defmodule Echo do
     {:continue, state}
   end
 end
-
-{:ok, pid} = ThousandIsland.start_link(port: 2112, handler_module: Echo, transport_options: [ recbuf: 1024 * 50 ])
-
-Process.sleep(:infinity)
