@@ -18,13 +18,16 @@ let client port main =
   let addr = Net.Addr.(tcp loopback port) in
   let conn = Net.Socket.connect addr |> Result.get_ok in
   Logger.debug (fun f -> f "Connected to server on %d" port);
-  let data = "hello world" in
-  let data = Bigstringaf.of_string data ~off:0 ~len:(String.length data) in
+  let data = IO.Buffer.of_string "hello world" in
+
+  let reader = Net.Socket.to_reader conn in
+  let writer = Net.Socket.to_writer conn in
+
   let rec send_loop n =
     sleep 0.001;
     if n = 0 then Logger.error (fun f -> f "client retried too many times")
     else
-      match Net.Socket.send ~data conn with
+      match IO.Writer.write ~data writer with
       | Ok bytes -> Logger.debug (fun f -> f "Client sent %d bytes" bytes)
       | Error `Closed -> Logger.debug (fun f -> f "connection closed")
       | Error (`Unix_error (ENOTCONN | EPIPE)) -> send_loop n
@@ -35,14 +38,14 @@ let client port main =
   in
   send_loop 10_000;
 
-  let buf = Bigstringaf.create 128 in
+  let buf = IO.Buffer.with_capacity 128 in
   let recv_loop () =
-    match Net.Socket.receive ~buf conn with
+    match IO.Reader.read ~buf reader with
     | Ok bytes ->
         Logger.debug (fun f -> f "Client received %d bytes" bytes);
         bytes
-    | Error (`Closed | `Timeout) ->
-        Logger.debug (fun f -> f "Server closed the connection");
+    | Error (`Eof | `Closed | `Timeout) ->
+        Logger.error (fun f -> f "Server closed the connection");
         0
     | Error (`Unix_error unix_err) ->
         Logger.error (fun f ->
@@ -52,7 +55,7 @@ let client port main =
   let len = recv_loop () in
 
   if len = 0 then send main (Received "empty paylaod")
-  else send main (Received (Bigstringaf.substring buf ~off:0 ~len))
+  else send main (Received (IO.Buffer.to_string buf))
 
 let () =
   Riot.run @@ fun () ->
