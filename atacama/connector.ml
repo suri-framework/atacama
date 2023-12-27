@@ -25,6 +25,9 @@ let init (module Transport : Transport.Intf) socket buffer_size handler ctx =
 
 let start_link ~transport ~conn ~buffer_size ~handler ~ctx () =
   let pid =
-    spawn_link (fun () -> init transport conn buffer_size handler ctx)
+    spawn_link (fun () ->
+        Fun.protect
+          ~finally:(fun () -> Net.Socket.close conn)
+          (fun () -> init transport conn buffer_size handler ctx))
   in
   Ok pid
