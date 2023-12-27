@@ -10,9 +10,8 @@ module Echo = struct
     type state = int
 
     let handle_data data socket state =
-      Logger.info (fun f ->
-          f "[%d] echo: %S" state (Bigstringaf.to_string data));
-      match Atacama.Socket.send socket data with
+      Logger.info (fun f -> f "[%d] echo: %S" state (IO.Buffer.to_string data));
+      match Atacama.Connection.send socket data with
       | Ok _bytes -> Continue (state + 1)
       | Error _ -> Close state
   end

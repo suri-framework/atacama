@@ -1,34 +1,22 @@
 open Riot
 
-let rec loop : Socket.t -> 's Handler.t -> 's -> unit =
- fun socket handler ctx ->
-  match Socket.receive socket ~timeout:Net.Socket.Infinity with
-  | Ok data -> handle_data socket handler ctx data
-  | Error err ->
-      Logger.error (fun f -> f "Error receiving data: %a" Net.Socket.pp_err err)
+let ( let* ) = Result.bind
 
-and handle_data socket handler ctx data =
-  Logger.debug (fun f -> f "Received data: %S" (IO.Buffer.to_string data));
-  match Handler.handle_data handler data socket ctx with
-  | Continue ctx -> loop socket handler ctx
-  | Close ctx ->
-      Logger.debug (fun f -> f "closing the socket: %a" Socket.pp socket);
-      Handler.handle_close handler socket ctx
-  | _ -> Logger.debug (fun f -> f "unexpected value: %a" Socket.pp socket)
+type t =
+  | Conn : {
+      writer : 'socket IO.Writer.t;
+      reader : 'socket IO.Reader.t;
+      buffer : IO.Buffer.t;
+    }
+      -> t
 
-let init : Socket.t -> 's Handler.t -> 's -> unit =
- fun socket handler ctx ->
-  let[@warning "-8"] (Ok socket) = Socket.handshake socket in
-  Logger.debug (fun f -> f "Initialized socket: %a" Socket.pp socket);
-  match Handler.handle_connection handler socket ctx with
-  | Continue ctx -> loop socket handler ctx
-  | _ -> ()
+let make ~reader ~writer ~buffer_size =
+  let buffer = IO.Buffer.with_capacity buffer_size in
+  Conn { buffer; reader; writer }
 
-let start_link socket handler ctx =
-  let pid =
-    spawn_link (fun () ->
-        Fun.protect
-          ~finally:(fun () -> Socket.close socket)
-          (fun () -> init socket handler ctx))
-  in
-  Ok pid
+let receive (Conn { reader; buffer = buf; _ }) =
+  match IO.Reader.read ~buf reader with
+  | Ok len -> Ok (IO.Buffer.sub buf ~off:0 ~len)
+  | Error err -> Error err
+
+let send (Conn { writer; _ }) data = IO.write_all writer ~data

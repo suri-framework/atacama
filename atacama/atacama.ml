@@ -1,5 +1,5 @@
 module Telemetry = Telemetry_
-module Socket = Socket
+module Connection = Connection
 module Handler = Handler
 module Transport = Transport
 open Riot

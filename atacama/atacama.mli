@@ -1,17 +1,9 @@
 open Riot
 
-module Socket : sig
+module Connection : sig
   type t
 
-  val handshake : t -> (t, [> `Closed | `Unix_error of Unix.error ]) result
-
-  val receive :
-    t ->
-    timeout:Net.Socket.timeout ->
-    (IO.Buffer.t, [> `Closed | `Timeout | `Unix_error of Unix.error ]) result
-
-  val send :
-    t -> IO.Buffer.t -> (int, [> `Closed | `Unix_error of Unix.error ]) result
+  val send : t -> IO.Buffer.t -> (int, [> `Closed | `Eof ]) IO.result
 end
 
 (** An Atacama Handler determines how every connection handled by Atacama will
@@ -44,17 +36,21 @@ module Handler : sig
   module type Intf = sig
     type state
 
-    val handle_close : Socket.t -> state -> unit
-    val handle_connection : Socket.t -> state -> (state, 'error) handler_result
+    val handle_close : Connection.t -> state -> unit
+
+    val handle_connection :
+      Connection.t -> state -> (state, 'error) handler_result
 
     val handle_data :
-      IO.Buffer.t -> Socket.t -> state -> (state, 'error) handler_result
+      IO.Buffer.t -> Connection.t -> state -> (state, 'error) handler_result
 
     val handle_error :
-      'error -> Socket.t -> state -> (state, 'error) handler_result
+      'error -> Connection.t -> state -> (state, 'error) handler_result
 
-    val handle_shutdown : Socket.t -> state -> (state, 'error) handler_result
-    val handle_timeout : Socket.t -> state -> (state, 'error) handler_result
+    val handle_shutdown :
+      Connection.t -> state -> (state, 'error) handler_result
+
+    val handle_timeout : Connection.t -> state -> (state, 'error) handler_result
   end
 
   (** Default handler methods. Useful for bootstrapping new handlers incrementally.
@@ -70,19 +66,22 @@ module Handler : sig
       ```
   *)
   module Default : sig
-    val handle_close : Socket.t -> 'state -> unit
+    val handle_close : Connection.t -> 'state -> unit
 
     val handle_connection :
-      Socket.t -> 'state -> ('state, 'error) handler_result
+      Connection.t -> 'state -> ('state, 'error) handler_result
 
     val handle_data :
-      IO.Buffer.t -> Socket.t -> 'state -> ('state, 'error) handler_result
+      IO.Buffer.t -> Connection.t -> 'state -> ('state, 'error) handler_result
 
     val handle_error :
-      'error -> Socket.t -> 'state -> ('state, 'error) handler_result
+      'error -> Connection.t -> 'state -> ('state, 'error) handler_result
 
-    val handle_shutdown : Socket.t -> 'state -> ('state, 'error) handler_result
-    val handle_timeout : Socket.t -> 'state -> ('state, 'error) handler_result
+    val handle_shutdown :
+      Connection.t -> 'state -> ('state, 'error) handler_result
+
+    val handle_timeout :
+      Connection.t -> 'state -> ('state, 'error) handler_result
   end
 
   type 's t = (module Intf with type state = 's)
@@ -90,51 +89,14 @@ end
 
 module Transport : sig
   module type Intf = sig
-    val listen :
-      ?opts:Net.Socket.listen_opts ->
-      port:int ->
-      unit ->
-      ( Net.Socket.listen_socket,
-        [> `System_limit | `Unix_error of Unix.error ] )
-      result
-
-    val connect :
-      Net.Addr.stream_addr ->
-      ( Net.Socket.stream_socket,
-        [> `Closed | `Unix_error of Unix.error ] )
-      result
-
-    val accept :
-      ?timeout:Net.Socket.timeout ->
-      Net.Socket.listen_socket ->
-      ( Net.Socket.stream_socket * Net.Addr.stream_addr,
-        [> `Closed | `System_limit | `Timeout | `Unix_error of Unix.error ] )
-      result
-
-    val close : 'a Net.Socket.socket -> unit
-
-    val controlling_process :
-      'a Net.Socket.socket ->
-      new_owner:Pid.t ->
-      (unit, [> `Closed | `Not_owner | `Unix_error of Unix.error ]) result
-
-    val receive :
-      ?timeout:Net.Socket.timeout ->
-      buf:IO.Buffer.t ->
-      Net.Socket.stream_socket ->
-      (int, [> `Closed | `Timeout | `Unix_error of Unix.error ]) result
-
-    val send :
-      data:IO.Buffer.t ->
-      Net.Socket.stream_socket ->
-      (int, [> `Closed | `Unix_error of Unix.error ]) result
-
     val handshake :
-      Net.Socket.stream_socket ->
-      (unit, [> `Closed | `Unix_error of Unix.error ]) result
+      socket:Net.Socket.stream_socket ->
+      buffer_size:int ->
+      (Connection.t, [> `Closed ]) IO.result
   end
 
   module Tcp : Intf
+  module Ssl : Intf
 end
 
 val start_link :

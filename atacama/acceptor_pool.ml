@@ -20,9 +20,11 @@ let rec accept_loop state =
 and handle_conn state conn client_addr =
   Logger.debug (fun f -> f "Accepted connection: %a" Net.Addr.pp client_addr);
   Telemetry_.accepted_connection client_addr;
-  let buffer = IO.Buffer.with_capacity state.buffer_size in
-  let conn = Socket.make conn state.transport buffer in
-  let (Ok _pid) = Connection.start_link conn state.handler state.initial_ctx in
+  let (Ok _pid) =
+    Connector.start_link ~transport:state.transport ~conn
+      ~buffer_size:state.buffer_size ~handler:state.handler
+      ~ctx:state.initial_ctx ()
+  in
   accept_loop state
 
 let start_link state =

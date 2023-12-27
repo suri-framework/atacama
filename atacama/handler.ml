@@ -10,17 +10,19 @@ type ('state, 'error) handler_result =
 module type Intf = sig
   type state
 
-  val handle_close : Socket.t -> state -> unit
-  val handle_connection : Socket.t -> state -> (state, 'error) handler_result
+  val handle_close : Connection.t -> state -> unit
+
+  val handle_connection :
+    Connection.t -> state -> (state, 'error) handler_result
 
   val handle_data :
-    IO.Buffer.t -> Socket.t -> state -> (state, 'error) handler_result
+    IO.Buffer.t -> Connection.t -> state -> (state, 'error) handler_result
 
   val handle_error :
-    'error -> Socket.t -> state -> (state, 'error) handler_result
+    'error -> Connection.t -> state -> (state, 'error) handler_result
 
-  val handle_shutdown : Socket.t -> state -> (state, 'error) handler_result
-  val handle_timeout : Socket.t -> state -> (state, 'error) handler_result
+  val handle_shutdown : Connection.t -> state -> (state, 'error) handler_result
+  val handle_timeout : Connection.t -> state -> (state, 'error) handler_result
 end
 
 module Default = struct
