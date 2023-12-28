@@ -14,7 +14,7 @@ and handle_data conn handler ctx data =
   | Close ctx ->
       Logger.debug (fun f -> f "closing the conn");
       Handler.handle_close handler conn ctx
-  | _ -> Logger.debug (fun f -> f "unexpected value")
+  | _ -> Logger.error (fun f -> f "unexpected value")
 
 let init (module Transport : Transport.Intf) socket buffer_size handler ctx =
   let[@warning "-8"] (Ok conn) = Transport.handshake ~socket ~buffer_size in

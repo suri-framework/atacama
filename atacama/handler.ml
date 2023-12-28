@@ -3,7 +3,7 @@ open Riot
 type ('state, 'error) handler_result =
   | Ok
   | Continue of 'state
-  | Continue_with_timeout of 'state * Net.Socket.timeout
+  | Continue_with_timeout of 'state * Timeout.t
   | Close of 'state
   | Error of 'state * 'error
 

@@ -4,6 +4,7 @@ module Connection : sig
   type t
 
   val send : t -> IO.Buffer.t -> (int, [> `Closed | `Eof ]) IO.result
+  val negotiated_protocol : t -> string option
 end
 
 (** An Atacama Handler determines how every connection handled by Atacama will
@@ -24,7 +25,7 @@ module Handler : sig
   type ('state, 'error) handler_result =
     | Ok
     | Continue of 'state
-    | Continue_with_timeout of 'state * Net.Socket.timeout
+    | Continue_with_timeout of 'state * Timeout.t
     | Close of 'state
     | Error of 'state * 'error
 
@@ -92,7 +93,9 @@ module Transport : sig
     val handshake :
       socket:Net.Socket.stream_socket ->
       buffer_size:int ->
-      (Connection.t, [> `Closed ]) IO.result
+      ( Connection.t,
+        [> `Closed | `Inactive_tls_engine | `No_session_data ] )
+      IO.result
   end
 
   module Tcp : Intf
