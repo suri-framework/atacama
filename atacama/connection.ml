@@ -17,7 +17,10 @@ let make ?(protocol = None) ~reader ~writer ~buffer_size () =
 
 let negotiated_protocol (Conn t) = t.protocol
 
-let receive (Conn { reader; buffer = buf; _ }) =
+let receive ?limit (Conn { reader; buffer = buf; _ }) =
+  let buf =
+    match limit with None -> buf | Some n -> IO.Buffer.with_capacity n
+  in
   match IO.Reader.read ~buf reader with
   | Ok len -> Ok (IO.Buffer.sub buf ~off:0 ~len)
   | Error err -> Error err
