@@ -5,11 +5,18 @@ let ( let* ) = Result.bind
 type t =
   | Conn : {
       protocol : string option;
-      writer : 'socket IO.Writer.t;
-      reader : 'socket IO.Reader.t;
+      writer : 'dst IO.Writer.t;
+      reader : 'src IO.Reader.t;
       buffer : IO.Buffer.t;
     }
       -> t
+
+let empty : t = 
+  let buffer = IO.Buffer.with_capacity 0 in
+  let reader = IO.Reader.of_buffer buffer in
+  let file = File.open_write "/dev/null" in
+  let writer = File.to_writer file in
+  Conn { protocol = None; writer; reader; buffer }
 
 let make ?(protocol = None) ~reader ~writer ~buffer_size () =
   let buffer = IO.Buffer.with_capacity buffer_size in

@@ -3,6 +3,7 @@ open Riot
 module Connection : sig
   type t
 
+  val empty : t
   val send : t -> IO.Buffer.t -> (int, [> `Closed | `Eof ]) IO.result
   val receive : ?limit:int -> t -> (IO.Buffer.t, [> `Closed | `Eof ]) IO.result
   val negotiated_protocol : t -> string option
