@@ -12,7 +12,7 @@ module rec R : sig
   type ('state, 'error) handler_result =
     | Ok
     | Continue of 'state
-    | Continue_with_timeout of 'state * Timeout.t
+    | Continue_with_timeout of 'state * Net.Socket.timeout
     | Close of 'state
     | Error of 'state * 'error
     | Switch of t
@@ -48,7 +48,7 @@ end = struct
   type ('state, 'error) handler_result =
     | Ok
     | Continue of 'state
-    | Continue_with_timeout of 'state * Timeout.t
+    | Continue_with_timeout of 'state * Net.Socket.timeout
     | Close of 'state
     | Error of 'state * 'error
     | Switch of t

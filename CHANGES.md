@@ -2,11 +2,26 @@
 
 ## 0.0.4
 
-* Upgrade to Riot 0.0.7
-* Introduce benchmarks in Go, Elixir, Erlang, Eio, and Rust
+* Introduce Handler Switching – this lets a handler, at any point during the
+  lifecycle, switch to a new handler and reinitizialize the connection.
+
+  This is particularly useful for protocol upgrades such as going from HTTP/1.1
+  to HTTP/2 or WebSockets.
+
+* Introduce protocol negotiation to support SSL socket pools in Riot 0.0.8
+
+* Expose a direct `Connection.receive` and allow reading an exact number of
+  bytes from a connection (useful for sniffing)
+
+* Introduce and update benchmarks in Go, Elixir, Erlang, Eio, and Rust
+
 * Refactor Transport/Socket interfaces to reuse buffers
+
 * Add `echo_test` to verify integrity of data
+
 * Add working TCP echo server example
+
+* Upgrade to Riot 0.0.7
 
 ## 0.0.3
 

@@ -11,7 +11,7 @@ type t =
     }
       -> t
 
-let empty : t = 
+let empty =
   let buffer = IO.Buffer.with_capacity 0 in
   let reader = IO.Reader.of_buffer buffer in
   let file = File.open_write "/dev/null" in

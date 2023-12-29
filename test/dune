@@ -1,3 +1,6 @@
-(tests
- (names echo_test)
+(test
+ (name echo_test)
+ (enabled_if
+  (= %{env:OPAM_REPO_CI=false} false))
+ (modules echo_test)
  (libraries atacama))
