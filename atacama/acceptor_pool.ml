@@ -2,12 +2,12 @@
 
 open Riot
 
-type 'ctx state = {
+type ('ctx, 'err) state = {
   buffer_size : int;
   socket : Net.Socket.listen_socket;
   transport : (module Transport.Intf);
   initial_ctx : 'ctx;
-  handler : 'ctx Handler.t;
+  handler : (module Handler.Intf with type state = 'ctx and type error = 'err);
 }
 
 let rec accept_loop state =
@@ -41,10 +41,11 @@ let child_spec ~socket ?(buffer_size = 1_024 * 50) transport handler initial_ctx
   Supervisor.child_spec ~start_link state
 
 module Sup = struct
-  type 'ctx state = {
+  type ('ctx, 'err) state = {
     acceptor_count : int;
     buffer_size : int;
-    handler_module : 'ctx Handler.t;
+    handler_module :
+      (module Handler.Intf with type state = 'ctx and type error = 'err);
     initial_ctx : 'ctx;
     port : int;
     transport_module : (module Transport.Intf);

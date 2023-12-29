@@ -7,6 +7,9 @@ module Echo_server = struct
   include Atacama.Handler.Default
 
   type state = int
+  type error = [ `noop ]
+
+  let pp_err fmt `noop = Format.fprintf fmt "Noop"
 
   let handle_data data socket state =
     match Atacama.Connection.send socket data with

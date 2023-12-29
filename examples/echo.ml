@@ -8,6 +8,9 @@ module Echo = struct
     include Atacama.Handler.Default
 
     type state = int
+    type error = [ `noop ]
+
+    let pp_err fmt `noop = Format.fprintf fmt "Noop"
 
     let handle_data data socket state =
       Logger.info (fun f -> f "[%d] echo: %S" state (IO.Buffer.to_string data));
