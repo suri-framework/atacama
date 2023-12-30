@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         spawn(async move {
             let (r, mut w) = socket.split();
-            let mut r = BufReader::with_capacity(1024 * 500, r);
+            let mut r = BufReader::with_capacity(1024 * 50, r);
             tokio::io::copy_buf(&mut r, &mut w).await?;
             Ok::<_, std::io::Error>(())
         });

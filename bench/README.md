@@ -1,16 +1,25 @@
 # Bench
 
-A small benchamrk of the throughput of echo TCP servers in OCaml+Atacama, OCaml+Eio, Go, Elixir, Erlang, and Rust.
+A small benchamrk of the throughput of echo TCP servers in
+OCaml+Atacama, OCaml+Eio, Go, Elixir, Erlang, and Rust.
 
+This is *NOT* a scientific benchmark, I run these for my own
+benefit a few times every time I do big changes to make sure I
+haven't broken something terribly. PRs very welcome to improve things!
+
+I'm also not running them on an dedicated machine, they run on my macbook pro.
+
+Some day we'll submit proper to techempower or sit down and do a real
+benchmark, for now, we have this:
 
 | name | 100conn/10s | 100conn/60s |
 |------|-------------|--------------|
-| Atacama | 422.3 Mbps | 403.7 Mbps |
-| Eio | 40.5 Mbps | 42.5 Mbps |
-| Erlang | 512.3 Mbps | 509.2 Mbps |
-| Elixir | 516.5 Mbps | 522.6 Mbps |
-| Go | 191.8 Mbps | 215.0 Mbps |
-| Rust | 226.5 Mbps | 230.8 Mbps |
+| OCaml (Atacama) | 422.3 Mbps | 403.7 Mbps |
+| OCaml (Eio) | 157.0 Mbps | 173.3 Mbps |
+| Erlang (ranch) | 512.3 Mbps | 509.2 Mbps |
+| Elixir (thousand_island) | 516.5 Mbps | 522.6 Mbps |
+| Go (stdlib) | 199.8 Mbps | 219.0 Mbps |
+| Rust (tokio) | 538.9 Mbps | 538.8 Mbps |
 
 **Atacama**
 ```
@@ -19,24 +28,26 @@ Destination: [0.0.0.0]:2112
 Interface lo0 address [127.0.0.1]:0
 Using interface lo0 to connect to [0.0.0.0]:2112
 Ramped up to 100 connections.
-Total data sent:     25513.4 MiB (26752753101 bytes)
-Total data received: 24847.8 MiB (26054801677 bytes)
-Bandwidth per channel: 422.389⇅ Mbps (52798.6 kBps)
-Aggregate bandwidth: 20840.315↓, 21398.581↑ Mbps
-Packet rate estimate: 1878102.7↓, 1866407.3↑ (11↓, 32↑ TCP MSS/op)
-Test duration: 10.0017 s.
+Total data sent:     9444.1 MiB (9902865586 bytes)
+Total data received: 9433.3 MiB (9891581952 bytes)
+Bandwidth per channel: 158.235⇅ Mbps (19779.3 kBps)
+Aggregate bandwidth: 7907.221↓, 7916.241↑ Mbps
+Packet rate estimate: 724672.1↓, 679765.2↑ (10↓, 18↑ TCP MSS/op)
+Test duration: 10.0076 s.
+
 
 ; tcpkali 0.0.0.0:2112 -m 'hello world' -c 100 -T 60s
 Destination: [0.0.0.0]:2112
 Interface lo0 address [127.0.0.1]:0
 Using interface lo0 to connect to [0.0.0.0]:2112
 Ramped up to 100 connections.
-Total data sent:     148813.4 MiB (156042115329 bytes)
-Total data received: 139995.0 MiB (146795369411 bytes)
-Bandwidth per channel: 403.758⇅ Mbps (50469.8 kBps)
-Aggregate bandwidth: 19571.504↓, 20804.327↑ Mbps
-Packet rate estimate: 1773350.3↓, 1827960.7↑ (11↓, 29↑ TCP MSS/op)
-Test duration: 60.0037 s.
+Total data sent:     52023.7 MiB (54550806178 bytes)
+Total data received: 51969.3 MiB (54493712384 bytes)
+Bandwidth per channel: 145.370⇅ Mbps (18171.2 kBps)
+Aggregate bandwidth: 7264.674↓, 7272.286↑ Mbps
+Packet rate estimate: 692980.0↓, 624650.5↑ (5↓, 10↑ TCP MSS/op)
+Test duration: 60.0095 s.
+
 ```
 
 **Eio**
@@ -46,24 +57,25 @@ Destination: [0.0.0.0]:2112
 Interface lo0 address [127.0.0.1]:0
 Using interface lo0 to connect to [0.0.0.0]:2112
 Ramped up to 100 connections.
-Total data sent:     2419.0 MiB (2536503252 bytes)
-Total data received: 2414.3 MiB (2531559424 bytes)
-Bandwidth per channel: 40.525⇅ Mbps (5065.7 kBps)
-Aggregate bandwidth: 2024.294↓, 2028.247↑ Mbps
-Packet rate estimate: 321717.3↓, 178558.7↑ (2↓, 9↑ TCP MSS/op)
-Test duration: 10.0047 s.
+Total data sent:     9357.9 MiB (9812417099 bytes)
+Total data received: 9370.8 MiB (9825945677 bytes)
+Bandwidth per channel: 157.041⇅ Mbps (19630.1 kBps)
+Aggregate bandwidth: 7857.443↓, 7846.624↑ Mbps
+Packet rate estimate: 699968.8↓, 711393.1↑ (10↓, 17↑ TCP MSS/op)
+Test duration: 10.0042 s.
 
 ; tcpkali 0.0.0.0:2112 -m 'hello world' -c 100 -T 60s
 Destination: [0.0.0.0]:2112
 Interface lo0 address [127.0.0.1]:0
 Using interface lo0 to connect to [0.0.0.0]:2112
 Ramped up to 100 connections.
-Total data sent:     15236.8 MiB (15976934476 bytes)
-Total data received: 15233.2 MiB (15973169152 bytes)
-Bandwidth per channel: 42.595⇅ Mbps (5324.4 kBps)
-Aggregate bandwidth: 2129.498↓, 2130.000↑ Mbps
-Packet rate estimate: 292793.5↓, 189698.2↑ (2↓, 9↑ TCP MSS/op)
-Test duration: 60.0073 s.
+Total data sent:     61980.1 MiB (64990858491 bytes)
+Total data received: 61998.3 MiB (65009927828 bytes)
+Bandwidth per channel: 173.308⇅ Mbps (21663.6 kBps)
+Aggregate bandwidth: 8666.695↓, 8664.152↑ Mbps
+Packet rate estimate: 770648.6↓, 783658.6↑ (10↓, 18↑ TCP MSS/op)
+Test duration: 60.009 s.
+
 ```
 
 **Erlang** (using `ranch`)
@@ -157,24 +169,24 @@ Destination: [0.0.0.0]:2112
 Interface lo0 address [127.0.0.1]:0
 Using interface lo0 to connect to [0.0.0.0]:2112
 Ramped up to 100 connections.
-Total data sent:     11437.1 MiB (11992702112 bytes)
-Total data received: 11451.3 MiB (12007586255 bytes)
-Bandwidth per channel: 191.817⇅ Mbps (23977.1 kBps)
-Aggregate bandwidth: 9596.798↓, 9584.903↑ Mbps
-Packet rate estimate: 839743.8↓, 854059.8↑ (10↓, 21↑ TCP MSS/op)
-Test duration: 10.0097 s.
+Total data sent:     12572.4 MiB (13183163320 bytes)
+Total data received: 12591.5 MiB (13203186173 bytes)
+Bandwidth per channel: 211.068⇅ Mbps (26383.5 kBps)
+Aggregate bandwidth: 10561.408↓, 10545.391↑ Mbps
+Packet rate estimate: 992567.9↓, 932650.8↑ (11↓, 22↑ TCP MSS/op)
+Test duration: 10.0011 s.
 
 ; tcpkali 0.0.0.0:2112 -m 'hello world' -c 100 -T 60s
 Destination: [0.0.0.0]:2112
 Interface lo0 address [127.0.0.1]:0
 Using interface lo0 to connect to [0.0.0.0]:2112
 Ramped up to 100 connections.
-Total data sent:     76921.7 MiB (80658251610 bytes)
-Total data received: 76927.7 MiB (80664542074 bytes)
-Bandwidth per channel: 215.085⇅ Mbps (26885.6 kBps)
-Aggregate bandwidth: 10754.664↓, 10753.826↑ Mbps
-Packet rate estimate: 925180.2↓, 938571.3↑ (10↓, 21↑ TCP MSS/op)
-Test duration: 60.0034 s.
+Total data sent:     78332.3 MiB (82137369297 bytes)
+Total data received: 78379.2 MiB (82186570690 bytes)
+Bandwidth per channel: 219.067⇅ Mbps (27383.4 kBps)
+Aggregate bandwidth: 10956.620↓, 10950.061↑ Mbps
+Packet rate estimate: 988206.8↓, 974395.3↑ (10↓, 20↑ TCP MSS/op)
+Test duration: 60.0087 s.
 
 ```
 

@@ -1,3 +1,9 @@
-(executables
- (names echo)
+(executable
+ (name echo)
+ (modules echo)
  (libraries atacama))
+
+(executable
+ (name echo_eio)
+ (modules echo_eio)
+ (libraries eio eio_main))
