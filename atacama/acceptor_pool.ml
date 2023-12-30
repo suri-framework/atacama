@@ -60,7 +60,16 @@ module Sup = struct
         port;
         transport_module;
       } =
-    let (Ok socket) = Net.Socket.listen ~port () in
+    let opts =
+      Net.Socket.
+        {
+          addr = Net.Addr.loopback;
+          reuse_addr = true;
+          reuse_port = false;
+          backlog = 100;
+        }
+    in
+    let (Ok socket) = Net.Socket.listen ~opts ~port () in
     Logger.debug (fun f -> f "Listening on 0.0.0.0:%d" port);
     Telemetry_.listening socket;
     let child_specs =
