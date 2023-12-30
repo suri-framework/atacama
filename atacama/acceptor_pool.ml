@@ -18,7 +18,7 @@ let rec accept_loop state =
           f "Error accepting connection: %a" Net.Socket.pp_err err)
 
 and handle_conn state conn client_addr =
-  Logger.debug (fun f -> f "Accepted connection: %a" Net.Addr.pp client_addr);
+  Logger.trace (fun f -> f "Accepted connection: %a" Net.Addr.pp client_addr);
   Telemetry_.accepted_connection client_addr;
   let (Ok _pid) =
     Connector.start_link ~transport:state.transport ~conn

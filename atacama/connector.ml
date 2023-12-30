@@ -16,11 +16,11 @@ let rec loop : type s e. (s, e) conn_fn =
 
 and handle_data : type s e. IO.Buffer.t -> (s, e) conn_fn =
  fun data conn handler ctx ->
-  Logger.debug (fun f -> f "Received data: %S" (IO.Buffer.to_string data));
+  Logger.trace (fun f -> f "Received data: %S" (IO.Buffer.to_string data));
   match Handler.handle_data handler data conn ctx with
   | Continue ctx -> loop conn handler ctx
   | Close ctx ->
-      Logger.debug (fun f -> f "closing the conn");
+      Logger.trace (fun f -> f "closing the conn");
       Handler.handle_close handler conn ctx
   | Switch (H { handler; state }) -> handle_connection conn handler state
   | _ -> Logger.error (fun f -> f "unexpected value")
@@ -34,7 +34,7 @@ and handle_connection : type s e. (s, e) conn_fn =
 
 let init (module Transport : Transport.Intf) socket buffer_size handler ctx =
   let[@warning "-8"] (Ok conn) = Transport.handshake ~socket ~buffer_size in
-  Logger.debug (fun f -> f "Initialized conn: %a" Net.Socket.pp socket);
+  Logger.trace (fun f -> f "Initialized conn: %a" Net.Socket.pp socket);
   handle_connection conn handler ctx
 
 let start_link ~transport ~conn ~buffer_size ~handler ~ctx () =
