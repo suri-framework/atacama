@@ -3,6 +3,8 @@
 A small benchamrk of the throughput of echo TCP servers in
 OCaml+Atacama, OCaml+Eio, Go, Elixir, Erlang, and Rust.
 
+We're basically trying to saturate the network stack.
+
 This is *NOT* a scientific benchmark, I run these for my own
 benefit a few times every time I do big changes to make sure I
 haven't broken something terribly. PRs very welcome to improve things!
