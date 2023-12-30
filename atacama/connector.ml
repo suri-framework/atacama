@@ -35,13 +35,12 @@ and handle_connection : type s e. (s, e) conn_fn =
 let init (module Transport : Transport.Intf) socket buffer_size handler ctx =
   let[@warning "-8"] (Ok conn) = Transport.handshake ~socket ~buffer_size in
   Logger.trace (fun f -> f "Initialized conn: %a" Net.Socket.pp socket);
-  handle_connection conn handler ctx
+  Fun.protect
+    ~finally:(fun () -> Connection.close conn)
+    (fun () -> handle_connection conn handler ctx)
 
 let start_link ~transport ~conn ~buffer_size ~handler ~ctx () =
   let pid =
-    spawn_link (fun () ->
-        Fun.protect
-          ~finally:(fun () -> Net.Socket.close conn)
-          (fun () -> init transport conn buffer_size handler ctx))
+    spawn_link (fun () -> init transport conn buffer_size handler ctx)
   in
   Ok pid

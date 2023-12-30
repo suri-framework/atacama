@@ -8,19 +8,13 @@ type t =
       writer : 'dst IO.Writer.t;
       reader : 'src IO.Reader.t;
       buffer : IO.Buffer.t;
+      socket : Net.Socket.stream_socket;
     }
       -> t
 
-let empty =
-  let buffer = IO.Buffer.with_capacity 0 in
-  let reader = IO.Reader.of_buffer buffer in
-  let file = File.open_write "/dev/null" in
-  let writer = File.to_writer file in
-  Conn { protocol = None; writer; reader; buffer }
-
-let make ?(protocol = None) ~reader ~writer ~buffer_size () =
+let make ?(protocol = None) ~reader ~writer ~buffer_size ~socket () =
   let buffer = IO.Buffer.with_capacity buffer_size in
-  Conn { buffer; reader; writer; protocol }
+  Conn { buffer; reader; writer; protocol; socket }
 
 let negotiated_protocol (Conn t) = t.protocol
 
@@ -33,3 +27,4 @@ let receive ?limit (Conn { reader; buffer = buf; _ }) =
   | Error err -> Error err
 
 let send (Conn { writer; _ }) data = IO.write_all writer ~data
+let close (Conn { socket; _ }) = Net.Socket.close socket
