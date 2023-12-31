@@ -99,24 +99,17 @@ module rec Handler : sig
 end
 
 module Transport : sig
-  module type Intf = sig
-    val handshake :
-      socket:Net.Socket.stream_socket ->
-      buffer_size:int ->
-      ( Connection.t,
-        [> `Closed | `Inactive_tls_engine | `No_session_data ] )
-      IO.result
-  end
+  type t
 
-  module Tcp : Intf
-  module Ssl : Intf
+  val tcp : t
+  val ssl : config:Tls.Config.server -> t
 end
 
 val start_link :
   port:int ->
   ?acceptor_count:int ->
   ?buffer_size:int ->
-  ?transport_module:(module Transport.Intf) ->
+  ?transport:Transport.t ->
   (module Handler.Intf with type state = 'state and type error = 'err) ->
   'state ->
   (Pid.t, [> `Supervisor_error ]) result
@@ -124,7 +117,7 @@ val start_link :
 
     The default `acceptor_count` is 100.
 
-    The default `transport_module` is clear TCP sockets.
+    The default `transport is clear TCP sockets.
 
 *)
 

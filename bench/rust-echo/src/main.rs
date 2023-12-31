@@ -14,6 +14,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         socket.set_recv_buffer_size(1024 * 50).unwrap();
         let std_stream: TcpStream = socket.into();
         let mut socket = tokio::net::TcpStream::from_std(std_stream).unwrap();
+        socket.set_nodelay(true).unwrap();
 
         spawn(async move {
             let (r, mut w) = socket.split();

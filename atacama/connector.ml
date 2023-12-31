@@ -32,8 +32,10 @@ and handle_connection : type s e. (s, e) conn_fn =
   | Switch (H { handler; state }) -> handle_connection conn handler state
   | _ -> ()
 
-let init (module Transport : Transport.Intf) socket buffer_size handler ctx =
-  let[@warning "-8"] (Ok conn) = Transport.handshake ~socket ~buffer_size in
+let init transport socket buffer_size handler ctx =
+  let[@warning "-8"] (Ok conn) =
+    Transport.handshake transport ~socket ~buffer_size
+  in
   Logger.trace (fun f -> f "Initialized conn: %a" Net.Socket.pp socket);
   Fun.protect
     ~finally:(fun () -> Connection.close conn)

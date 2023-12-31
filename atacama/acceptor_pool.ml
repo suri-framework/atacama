@@ -5,7 +5,7 @@ open Riot
 type ('ctx, 'err) state = {
   buffer_size : int;
   socket : Net.Socket.listen_socket;
-  transport : (module Transport.Intf);
+  transport : Transport.t;
   initial_ctx : 'ctx;
   handler : (module Handler.Intf with type state = 'ctx and type error = 'err);
 }
@@ -48,7 +48,7 @@ module Sup = struct
       (module Handler.Intf with type state = 'ctx and type error = 'err);
     initial_ctx : 'ctx;
     port : int;
-    transport_module : (module Transport.Intf);
+    transport : Transport.t;
   }
 
   let start_link
@@ -58,7 +58,7 @@ module Sup = struct
         handler_module;
         initial_ctx;
         port;
-        transport_module;
+        transport;
       } =
     let opts =
       Net.Socket.
@@ -74,13 +74,12 @@ module Sup = struct
     Telemetry_.listening socket;
     let child_specs =
       List.init acceptor_count (fun _ ->
-          child_spec ~socket ~buffer_size transport_module handler_module
-            initial_ctx)
+          child_spec ~socket ~buffer_size transport handler_module initial_ctx)
     in
     Supervisor.start_link ~child_specs ()
 
-  let child_spec ~port ~acceptor_count ~transport_module ~handler_module
-      ~buffer_size initial_ctx =
+  let child_spec ~port ~acceptor_count ~transport ~handler_module ~buffer_size
+      initial_ctx =
     let state =
       {
         acceptor_count;
@@ -88,7 +87,7 @@ module Sup = struct
         handler_module;
         initial_ctx;
         port;
-        transport_module;
+        transport;
       }
     in
     Supervisor.child_spec ~start_link state

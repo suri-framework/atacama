@@ -20,6 +20,8 @@ func main() {
 	for {
 		// Wait for a connection.
 		conn, _ := l.Accept()
+    tcpconn := conn.(*net.TCPConn)
+    tcpconn.SetNoDelay(false)
 		go handleRequest(conn)
 	}
 }
