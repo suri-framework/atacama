@@ -86,8 +86,8 @@ module Default = struct
   let handle_timeout _sock _state = Ok
 end
 
-let pp_err (type s e)
-    (module H : Intf with type state = s and type error = e) fmt (e: e) =
+let pp_err (type s e) (module H : Intf with type state = s and type error = e)
+    fmt (e : e) =
   H.pp_err fmt e
 
 let handle_close (type s e)

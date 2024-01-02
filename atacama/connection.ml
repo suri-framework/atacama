@@ -28,3 +28,6 @@ let receive ?limit (Conn { reader; buffer = buf; _ }) =
 
 let send (Conn { writer; _ }) data = IO.write_all writer ~data
 let close (Conn { socket; _ }) = Net.Socket.close socket
+
+let send_file (Conn { socket; _ }) ?off ~len file =
+  File.send ?off ~len file socket

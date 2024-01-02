@@ -23,10 +23,10 @@ and handle_data : type s e. IO.Buffer.t -> (s, e) conn_fn =
       Logger.trace (fun f -> f "closing the conn");
       Handler.handle_close handler conn ctx
   | Switch (H { handler; state }) -> handle_connection conn handler state
-  | Error (_state, error) -> 
-      Logger.error (fun f -> f "connection error: %a" (Handler.pp_err handler) error)
-  | _ -> 
-      Logger.error (fun f -> f "unexpected value")
+  | Error (_state, error) ->
+      Logger.error (fun f ->
+          f "connection error: %a" (Handler.pp_err handler) error)
+  | _ -> Logger.error (fun f -> f "unexpected value")
 
 and handle_connection : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
