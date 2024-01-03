@@ -25,7 +25,9 @@ let handshake (T { transport = (module T); config }) ~socket ~buffer_size =
   T.handshake ~config ~socket ~buffer_size
 
 module Tcp = struct
-  type config = unit
+  type config = { receive_timeout : int64 }
+
+  let default_config = { receive_timeout = 5_000_000L }
 
   let handshake ~config:_ ~socket ~buffer_size =
     let reader, writer = Net.Socket.(to_reader socket, to_writer socket) in
@@ -33,7 +35,8 @@ module Tcp = struct
     Ok conn
 end
 
-let tcp = T { transport = (module Tcp); config = () }
+let tcp ?(config = Tcp.default_config) () =
+  T { transport = (module Tcp); config }
 
 module Ssl = struct
   type config = Tls.Config.server
@@ -48,4 +51,4 @@ module Ssl = struct
     Ok conn
 end
 
-let ssl ~config = T { transport = (module Ssl); config }
+let ssl ~config () = T { transport = (module Ssl); config }

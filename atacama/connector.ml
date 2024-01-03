@@ -11,6 +11,8 @@ let rec loop : type s e. (s, e) conn_fn =
   match Connection.receive conn with
   | Ok data -> handle_data data conn handler ctx
   | Error `Eof -> Logger.error (fun f -> f "Error receiving data: end of file")
+  | Error (`Timeout | `Process_down) ->
+      Logger.error (fun f -> f "Error receiving data: timeout")
   | Error ((`Closed | `Unix_error _) as err) ->
       Logger.error (fun f -> f "Error receiving data: %a" Net.Socket.pp_err err)
 

@@ -32,7 +32,7 @@ let client port main =
     else
       match IO.Writer.write ~data writer with
       | Ok bytes -> Logger.debug (fun f -> f "Client sent %d bytes" bytes)
-      | Error `Closed -> Logger.debug (fun f -> f "connection closed")
+      | Error (`Closed | `Timeout | `Process_down) -> Logger.debug (fun f -> f "connection closed")
       | Error (`Unix_error (ENOTCONN | EPIPE)) -> send_loop n
       | Error (`Unix_error unix_err) ->
           Logger.error (fun f ->
@@ -47,7 +47,7 @@ let client port main =
     | Ok bytes ->
         Logger.debug (fun f -> f "Client received %d bytes" bytes);
         bytes
-    | Error (`Eof | `Closed | `Timeout) ->
+    | Error (`Eof | `Closed | `Timeout |`Process_down) ->
         Logger.error (fun f -> f "Server closed the connection");
         0
     | Error (`Unix_error unix_err) ->

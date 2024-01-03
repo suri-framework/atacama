@@ -110,8 +110,12 @@ end
 module Transport : sig
   type t
 
-  val tcp : t
-  val ssl : config:Tls.Config.server -> t
+  module Tcp : sig
+    type config = { receive_timeout : int64 }
+  end
+
+  val tcp : ?config:Tcp.config -> unit -> t
+  val ssl : config:Tls.Config.server -> unit -> t
 end
 
 val start_link :
