@@ -3,16 +3,16 @@ open Riot
 module Connection : sig
   type t
 
-  val send : t -> IO.Buffer.t -> (int, [> `Closed | `Eof ]) IO.result
+  val send : t -> IO.Buffer.t -> (int, [> `Closed ]) IO.result
 
   val send_file :
     t ->
     ?off:int ->
     len:int ->
     [ `r ] File.file ->
-    (int, [> `Closed | `Eof ]) IO.result
+    (int, [> `Closed ]) IO.result
 
-  val receive : ?limit:int -> t -> (IO.Buffer.t, [> `Closed | `Eof ]) IO.result
+  val receive : ?limit:int -> t -> (IO.Buffer.t, [> `Closed ]) IO.result
   val negotiated_protocol : t -> string option
   val close : t -> unit
 end
@@ -115,7 +115,7 @@ module Transport : sig
   end
 
   module Ssl : sig
-    type config = { tcp: Tcp.config; tls: Tls.Config.server }
+    type config = { tcp : Tcp.config; tls : Tls.Config.server }
   end
 
   val tcp : ?config:Tcp.config -> unit -> t
