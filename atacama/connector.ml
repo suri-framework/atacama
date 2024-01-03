@@ -1,5 +1,9 @@
 open Riot
 
+module Logger = Logger.Make(struct
+  let namespace = ["atacama";"connector"]
+end)
+
 type ('s, 'e) conn_fn =
   Connection.t ->
   (module Handler.Intf with type state = 's and type error = 'e) ->
@@ -8,6 +12,7 @@ type ('s, 'e) conn_fn =
 
 let rec loop : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
+  Logger.trace (fun f -> f "Receiving...: %a" Pid.pp (self ()));
   match Connection.receive conn with
   | Ok data -> handle_data data conn handler ctx
   | Error (`Timeout | `Process_down) ->
@@ -17,7 +22,7 @@ let rec loop : type s e. (s, e) conn_fn =
 
 and handle_data : type s e. IO.Buffer.t -> (s, e) conn_fn =
  fun data conn handler ctx ->
-  Logger.trace (fun f -> f "Received data: %S" (IO.Buffer.to_string data));
+  Logger.trace (fun f -> f "Received data: %d octets" (IO.Buffer.length data));
   match Handler.handle_data handler data conn ctx with
   | Continue ctx -> loop conn handler ctx
   | Close ctx ->

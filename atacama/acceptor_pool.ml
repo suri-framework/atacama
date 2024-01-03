@@ -2,6 +2,10 @@
 
 open Riot
 
+module Logger = Logger.Make(struct
+  let namespace = ["atacama";"acceptor_pool"]
+end)
+
 type ('ctx, 'err) state = {
   buffer_size : int;
   socket : Net.Socket.listen_socket;
