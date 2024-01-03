@@ -111,11 +111,15 @@ module Transport : sig
   type t
 
   module Tcp : sig
-    type config = { receive_timeout : int64 }
+    type config = { receive_timeout : int64; send_timeout : int64 }
+  end
+
+  module Ssl : sig
+    type config = { tcp: Tcp.config; tls: Tls.Config.server }
   end
 
   val tcp : ?config:Tcp.config -> unit -> t
-  val ssl : config:Tls.Config.server -> unit -> t
+  val ssl : config:Ssl.config -> unit -> t
 end
 
 val start_link :
