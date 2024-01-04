@@ -2,8 +2,8 @@
 
 open Riot
 
-module Logger = Logger.Make(struct
-  let namespace = ["atacama";"acceptor_pool"]
+module Logger = Logger.Make (struct
+  let namespace = [ "atacama"; "acceptor_pool" ]
 end)
 
 type ('ctx, 'err) state = {

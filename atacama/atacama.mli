@@ -12,7 +12,9 @@ module Connection : sig
     [ `r ] File.file ->
     (int, [> `Closed ]) IO.result
 
-  val receive : ?limit:int -> t -> (IO.Buffer.t, [> `Closed ]) IO.result
+  val receive :
+    ?limit:int -> ?read_size:int -> t -> (IO.Buffer.t, [> `Closed ]) IO.result
+
   val negotiated_protocol : t -> string option
   val close : t -> unit
 end

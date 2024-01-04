@@ -1,7 +1,7 @@
 open Riot
 
-module Logger = Logger.Make(struct
-  let namespace = ["atacama";"connector"]
+module Logger = Logger.Make (struct
+  let namespace = [ "atacama"; "connector" ]
 end)
 
 type ('s, 'e) conn_fn =
