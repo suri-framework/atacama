@@ -16,17 +16,17 @@ type ('ctx, 'err) state = {
 
 let rec accept_loop state =
   match Net.Socket.accept state.socket with
-  | Ok (conn, client_addr) -> handle_conn state conn client_addr
+  | Ok (conn, peer) -> handle_conn state conn peer
   | Error err ->
       Logger.error (fun f ->
           f "Error accepting connection: %a" Net.Socket.pp_err err)
 
-and handle_conn state conn client_addr =
-  Logger.trace (fun f -> f "Accepted connection: %a" Net.Addr.pp client_addr);
-  Telemetry_.accepted_connection client_addr;
+and handle_conn state conn peer =
+  Logger.trace (fun f -> f "Accepted connection: %a" Net.Addr.pp peer);
+  Telemetry_.accepted_connection peer;
   let (Ok _pid) =
     Connector.start_link ~transport:state.transport ~conn
-      ~buffer_size:state.buffer_size ~handler:state.handler
+      ~buffer_size:state.buffer_size ~handler:state.handler ~peer
       ~ctx:state.initial_ctx ()
   in
   accept_loop state
@@ -42,7 +42,7 @@ let start_link state =
 let child_spec ~socket ?(buffer_size = 1_024 * 50) transport handler initial_ctx
     =
   let state = { socket; buffer_size; transport; handler; initial_ctx } in
-  Supervisor.child_spec ~start_link state
+  Supervisor.child_spec start_link state
 
 module Sup = struct
   type ('ctx, 'err) state = {
@@ -94,5 +94,5 @@ module Sup = struct
         transport;
       }
     in
-    Supervisor.child_spec ~start_link state
+    Supervisor.child_spec start_link state
 end

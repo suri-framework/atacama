@@ -8,6 +8,7 @@ module type Intf = sig
   val handshake :
     config:config ->
     socket:Net.Socket.stream_socket ->
+    peer:Net.Addr.stream_addr ->
     buffer_size:int ->
     ( Connection.t,
       [> `Closed | `Inactive_tls_engine | `No_session_data ] )
@@ -30,13 +31,13 @@ module Tcp = struct
   let default_config =
     { receive_timeout = 5_000_000L; send_timeout = 5_000_000L }
 
-  let handshake ~config ~socket ~buffer_size =
+  let handshake ~config ~socket ~peer ~buffer_size =
     let reader, writer =
       Net.Socket.
         ( to_reader ~timeout:config.receive_timeout socket,
           to_writer ~timeout:config.send_timeout socket )
     in
-    let conn = Connection.make ~reader ~writer ~buffer_size ~socket () in
+    let conn = Connection.make ~reader ~writer ~buffer_size ~socket ~peer () in
     Ok conn
 end
 
@@ -46,7 +47,7 @@ let tcp ?(config = Tcp.default_config) () =
 module Ssl = struct
   type config = { tcp : Tcp.config; tls : Tls.Config.server }
 
-  let handshake ~config ~socket ~buffer_size =
+  let handshake ~config ~socket ~peer ~buffer_size =
     let ssl =
       SSL.of_server_socket ~read_timeout:config.tcp.receive_timeout
         ~send_timeout:config.tcp.send_timeout ~config:config.tls socket
@@ -54,7 +55,7 @@ module Ssl = struct
     let reader, writer = SSL.(to_reader ssl, to_writer ssl) in
     let* protocol = SSL.negotiated_protocol ssl in
     let conn =
-      Connection.make ~protocol ~reader ~writer ~buffer_size ~socket ()
+      Connection.make ~protocol ~reader ~writer ~buffer_size ~socket ~peer ()
     in
     Ok conn
 end

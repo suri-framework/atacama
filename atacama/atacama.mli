@@ -17,6 +17,7 @@ module Connection : sig
 
   val negotiated_protocol : t -> string option
   val close : t -> unit
+  val peer : t -> Net.Addr.stream_addr
 end
 
 (** An Atacama Handler determines how every connection handled by Atacama will

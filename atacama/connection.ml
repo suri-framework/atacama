@@ -13,12 +13,13 @@ type t =
       reader : 'src IO.Reader.t;
       buffer : IO.Buffer.t;
       socket : Net.Socket.stream_socket;
+      peer : Net.Addr.stream_addr;
     }
       -> t
 
-let make ?(protocol = None) ~reader ~writer ~buffer_size ~socket () =
+let make ?(protocol = None) ~reader ~writer ~buffer_size ~socket ~peer () =
   let buffer = IO.Buffer.with_capacity buffer_size in
-  Conn { buffer; reader; writer; protocol; socket }
+  Conn { buffer; reader; writer; protocol; socket; peer }
 
 let negotiated_protocol (Conn t) = t.protocol
 
@@ -57,6 +58,7 @@ and do_read ?buf (Conn { reader; buffer; _ }) =
   | Ok len -> Ok (IO.Buffer.sub buf ~off:0 ~len)
   | Error err -> Error err
 
+let peer (Conn { peer; _ }) = peer
 let send (Conn { writer; _ }) data = IO.write_all writer ~data
 let close (Conn { socket; _ }) = Net.Socket.close socket
 
