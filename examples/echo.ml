@@ -22,8 +22,6 @@ module Echo = struct
   let start () =
     Logger.set_log_level (Some Debug);
     Atacama.start_link ~port:2112 (module Server) 0
-
-  let name = "echo_server"
 end
 
 let () = Riot.start ~apps:[ (module Logger); (module Echo) ] ()

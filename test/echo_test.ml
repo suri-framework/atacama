@@ -17,10 +17,10 @@ module Echo_server = struct
     | Error _ -> Close state
 end
 
-let client port main =
-  let addr = Net.Addr.(tcp loopback port) in
+let client server_port main =
+  let addr = Net.Addr.(tcp loopback server_port) in
   let conn = Net.Socket.connect addr |> Result.get_ok in
-  Logger.debug (fun f -> f "Connected to server on %d" port);
+  Logger.debug (fun f -> f "Connected to server on %d" server_port);
   let data = IO.Buffer.of_string "hello world" in
 
   let reader = Net.Socket.to_reader conn in

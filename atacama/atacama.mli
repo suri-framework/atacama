@@ -127,7 +127,7 @@ end
 
 val start_link :
   port:int ->
-  ?acceptor_count:int ->
+  ?acceptors:int ->
   ?buffer_size:int ->
   ?transport:Transport.t ->
   (module Handler.Intf with type state = 'state and type error = 'err) ->
@@ -135,7 +135,7 @@ val start_link :
   (Pid.t, [> `Supervisor_error ]) result
 (** Start an Atacama server.
 
-    The default `acceptor_count` is 100.
+    The default `acceptors` is 100.
 
     The default `transport is clear TCP sockets.
 
