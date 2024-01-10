@@ -17,8 +17,8 @@ type t =
     }
       -> t
 
-let make ?(protocol = None) ~reader ~writer ~buffer_size ~socket ~peer () =
-  let buffer = IO.Bytes.with_capacity buffer_size in
+let make ?(protocol = None) ~reader ~writer ~buffer_size:_ ~socket ~peer () =
+  let buffer = IO.Bytes.empty in
   Conn { buffer; reader; writer; protocol; socket; peer }
 
 let negotiated_protocol (Conn t) = t.protocol
