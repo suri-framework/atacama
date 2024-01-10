@@ -28,7 +28,7 @@ module rec R : sig
       Connection.t -> state -> (state, error) handler_result
 
     val handle_data :
-      IO.Bytes.t -> Connection.t -> state -> (state, error) handler_result
+      Bytestring.t -> Connection.t -> state -> (state, error) handler_result
 
     val handle_error :
       error -> Connection.t -> state -> (state, error) handler_result
@@ -64,7 +64,7 @@ end = struct
       Connection.t -> state -> (state, error) handler_result
 
     val handle_data :
-      IO.Bytes.t -> Connection.t -> state -> (state, error) handler_result
+      Bytestring.t -> Connection.t -> state -> (state, error) handler_result
 
     val handle_error :
       error -> Connection.t -> state -> (state, error) handler_result

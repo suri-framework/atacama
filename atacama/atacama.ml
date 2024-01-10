@@ -4,7 +4,7 @@ module Handler = Handler
 module Transport = Transport
 open Riot
 
-let start_link ~port ?(acceptors = 100) ?(buffer_size = 1_024 * 128)
+let start_link ~port ?(acceptors = 100) ?(buffer_size = 1_024 * 50)
     ?(transport = Transport.tcp ()) handler initial_ctx =
   let child_specs =
     [

@@ -1,6 +1,6 @@
 open Riot
 
-module Logger = Logger.Make (struct
+open Logger.Make (struct
   let namespace = [ "atacama"; "connector" ]
 end)
 
@@ -12,27 +12,26 @@ type ('s, 'e) conn_fn =
 
 let rec loop : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
-  Logger.trace (fun f -> f "Receiving...: %a" Pid.pp (self ()));
+  trace (fun f -> f "Receiving...: %a" Pid.pp (self ()));
   match Connection.receive conn with
   | Ok data -> handle_data data conn handler ctx
   | Error (`Timeout | `Process_down) ->
-      Logger.error (fun f -> f "Error receiving data: timeout")
+      error (fun f -> f "Error receiving data: timeout")
   | Error ((`Closed | `Unix_error _) as err) ->
-      Logger.error (fun f -> f "Error receiving data: %a" Net.Socket.pp_err err)
+      error (fun f -> f "Error receiving data: %a" Net.Socket.pp_err err)
 
-and handle_data : type s e. IO.Bytes.t -> (s, e) conn_fn =
+and handle_data : type s e. Bytestring.t -> (s, e) conn_fn =
  fun data conn handler ctx ->
-  Logger.trace (fun f -> f "Received data: %d octets" (IO.Bytes.length data));
+  trace (fun f -> f "Received data: %d octets" (Bytestring.length data));
   match Handler.handle_data handler data conn ctx with
   | Continue ctx -> loop conn handler ctx
   | Close ctx ->
-      Logger.trace (fun f -> f "closing the conn");
+      trace (fun f -> f "closing the conn");
       Handler.handle_close handler conn ctx
   | Switch (H { handler; state }) -> handle_connection conn handler state
-  | Error (_state, error) ->
-      Logger.error (fun f ->
-          f "connection error: %a" (Handler.pp_err handler) error)
-  | _ -> Logger.error (fun f -> f "unexpected value")
+  | Error (_state, err) ->
+      error (fun f -> f "connection error: %a" (Handler.pp_err handler) err)
+  | _ -> error (fun f -> f "unexpected value")
 
 and handle_connection : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
@@ -45,7 +44,7 @@ let init transport socket peer buffer_size handler ctx =
   let[@warning "-8"] (Ok conn) =
     Transport.handshake transport ~socket ~peer ~buffer_size
   in
-  Logger.trace (fun f -> f "Initialized conn: %a" Net.Socket.pp socket);
+  trace (fun f -> f "Initialized conn: %a" Net.Socket.pp socket);
   Fun.protect
     ~finally:(fun () -> Connection.close conn)
     (fun () -> handle_connection conn handler ctx)

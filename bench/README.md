@@ -14,14 +14,14 @@ I'm also not running them on an dedicated machine, they run on my macbook pro.
 Some day we'll submit proper to techempower or sit down and do a real
 benchmark, for now, we have this:
 
-| name | 100conn/10s | 100conn/60s |
-|------|-------------|--------------|
-| OCaml (Atacama) | 422.3 Mbps | 403.7 Mbps |
-| OCaml (Eio) | 157.0 Mbps | 173.3 Mbps |
-| Erlang (ranch) | 512.3 Mbps | 509.2 Mbps |
-| Elixir (thousand_island) | 516.5 Mbps | 522.6 Mbps |
-| Go (stdlib) | 199.8 Mbps | 219.0 Mbps |
-| Rust (tokio) | 538.9 Mbps | 538.8 Mbps |
+| name | 1conn/10s | 100conn/10s | 100conn/60s | 500conn/10s |
+----------------------------------------------------------------
+| OCaml (Atacama) | 40279.8 Mbps | 422.3 Mbps | 403.7 Mbps | 58.0 Mbps |
+| OCaml (Eio) | 22179.3 Mbps | 157.0 Mbps | 173.3 Mbps | 33.8 Mbps |
+| Erlang (ranch) | 73343.6 Mbps | 512.3 Mbps | 509.2 Mbps | 27.1 Mbps |
+| Elixir (thousand_island) | 72888.8 Mbps | 516.5 Mbps | 522.6 Mbps | 48.8 Mbps |
+| Go (stdlib) | 72813.1 Mbps | 199.8 Mbps | 219.0 Mbps | 55.9 Mbps |
+| Rust (tokio) | 77355.3 Mbps | 538.9 Mbps | 538.8 Mbps | 49.4 Mbps |
 
 **Atacama**
 ```
