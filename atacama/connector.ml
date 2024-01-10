@@ -20,9 +20,9 @@ let rec loop : type s e. (s, e) conn_fn =
   | Error ((`Closed | `Unix_error _) as err) ->
       Logger.error (fun f -> f "Error receiving data: %a" Net.Socket.pp_err err)
 
-and handle_data : type s e. IO.Buffer.t -> (s, e) conn_fn =
+and handle_data : type s e. IO.Bytes.t -> (s, e) conn_fn =
  fun data conn handler ctx ->
-  Logger.trace (fun f -> f "Received data: %d octets" (IO.Buffer.length data));
+  Logger.trace (fun f -> f "Received data: %d octets" (IO.Bytes.length data));
   match Handler.handle_data handler data conn ctx with
   | Continue ctx -> loop conn handler ctx
   | Close ctx ->

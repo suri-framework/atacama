@@ -21,7 +21,7 @@ let client server_port main =
   let addr = Net.Addr.(tcp loopback server_port) in
   let conn = Net.Socket.connect addr |> Result.get_ok in
   Logger.debug (fun f -> f "Connected to server on %d" server_port);
-  let data = IO.Buffer.of_string "hello world" in
+  let buf = IO.Bytes.of_string "hello world" in
 
   let reader = Net.Socket.to_reader conn in
   let writer = Net.Socket.to_writer conn in
@@ -30,8 +30,9 @@ let client server_port main =
     sleep 0.001;
     if n = 0 then Logger.error (fun f -> f "client retried too many times")
     else
-      match IO.Writer.write ~data writer with
-      | Ok bytes -> Logger.debug (fun f -> f "Client sent %d bytes" bytes)
+      match IO.write_all ~buf writer with
+      | Ok () ->
+          Logger.debug (fun f -> f "Client sent %d bytes" (IO.Bytes.length buf))
       | Error (`Closed | `Timeout | `Process_down) ->
           Logger.debug (fun f -> f "connection closed")
       | Error (`Unix_error (ENOTCONN | EPIPE)) -> send_loop n
@@ -42,9 +43,9 @@ let client server_port main =
   in
   send_loop 10_000;
 
-  let buf = IO.Buffer.with_capacity 128 in
+  let buf = IO.Bytes.with_capacity 128 in
   let recv_loop () =
-    match IO.Reader.read ~buf reader with
+    match IO.read ~buf reader with
     | Ok bytes ->
         Logger.debug (fun f -> f "Client received %d bytes" bytes);
         bytes
@@ -59,7 +60,7 @@ let client server_port main =
   let len = recv_loop () in
 
   if len = 0 then send main (Received "empty paylaod")
-  else send main (Received (IO.Buffer.to_string buf))
+  else send main (Received (IO.Bytes.to_string buf))
 
 let () =
   Riot.run @@ fun () ->

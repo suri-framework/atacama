@@ -3,17 +3,17 @@ open Riot
 module Connection : sig
   type t
 
-  val send : t -> IO.Buffer.t -> (int, [> `Closed ]) IO.result
+  val send : t -> IO.Bytes.t -> (unit, [> `Closed ]) IO.io_result
 
   val send_file :
     t ->
     ?off:int ->
     len:int ->
     [ `r ] File.file ->
-    (int, [> `Closed ]) IO.result
+    (int, [> `Closed ]) IO.io_result
 
   val receive :
-    ?limit:int -> ?read_size:int -> t -> (IO.Buffer.t, [> `Closed ]) IO.result
+    ?limit:int -> ?read_size:int -> t -> (IO.Bytes.t, [> `Closed ]) IO.io_result
 
   val negotiated_protocol : t -> string option
   val close : t -> unit
@@ -69,7 +69,7 @@ module rec Handler : sig
       Connection.t -> state -> (state, error) handler_result
 
     val handle_data :
-      IO.Buffer.t -> Connection.t -> state -> (state, error) handler_result
+      IO.Bytes.t -> Connection.t -> state -> (state, error) handler_result
 
     val handle_error :
       error -> Connection.t -> state -> (state, error) handler_result
@@ -97,7 +97,7 @@ module rec Handler : sig
       Connection.t -> 'state -> ('state, 'error) handler_result
 
     val handle_data :
-      IO.Buffer.t -> Connection.t -> 'state -> ('state, 'error) handler_result
+      IO.Bytes.t -> Connection.t -> 'state -> ('state, 'error) handler_result
 
     val handle_error :
       'error -> Connection.t -> 'state -> ('state, 'error) handler_result

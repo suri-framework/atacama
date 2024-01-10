@@ -13,7 +13,7 @@ module Echo = struct
     let pp_err fmt `noop = Format.fprintf fmt "Noop"
 
     let handle_data data socket state =
-      Logger.info (fun f -> f "[%d] echo: %S" state (IO.Buffer.to_string data));
+      Logger.info (fun f -> f "[%d] echo: %S" state (IO.Bytes.to_string data));
       match Atacama.Connection.send socket data with
       | Ok _bytes -> Continue (state + 1)
       | Error _ -> Close state

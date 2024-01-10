@@ -12,7 +12,7 @@ module type Intf = sig
     buffer_size:int ->
     ( Connection.t,
       [> `Closed | `Inactive_tls_engine | `No_session_data ] )
-    IO.result
+    IO.io_result
 end
 
 type t =
