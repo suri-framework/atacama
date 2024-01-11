@@ -22,10 +22,11 @@ let rec accept_loop state =
           f "Error accepting connection: %a" Net.Socket.pp_err err)
 
 and handle_conn state conn peer =
+  let accepted_at = Ptime_clock.now () in
   Logger.trace (fun f -> f "Accepted connection: %a" Net.Addr.pp peer);
   Telemetry_.accepted_connection peer;
   let (Ok _pid) =
-    Connector.start_link ~transport:state.transport ~conn
+    Connector.start_link ~accepted_at ~transport:state.transport ~conn
       ~buffer_size:state.buffer_size ~handler:state.handler ~peer
       ~ctx:state.initial_ctx ()
   in

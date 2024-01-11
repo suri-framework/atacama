@@ -14,11 +14,13 @@ type t =
       socket : Net.Socket.stream_socket;
       peer : Net.Addr.stream_addr;
       default_read_size : int;
+      accepted_at : Ptime.t;
       connected_at : Ptime.t;
     }
       -> t
 
-let make ?(protocol = None) ~reader ~writer ~buffer_size ~socket ~peer () =
+let make ?(protocol = None) ~accepted_at ~reader ~writer ~buffer_size ~socket
+    ~peer () =
   Conn
     {
       reader;
@@ -27,6 +29,7 @@ let make ?(protocol = None) ~reader ~writer ~buffer_size ~socket ~peer () =
       socket;
       peer;
       default_read_size = buffer_size;
+      accepted_at;
       connected_at = Ptime_clock.now ();
     }
 
@@ -59,6 +62,7 @@ and do_send (Conn { writer; _ } as conn) bufs len =
 
 let peer (Conn { peer; _ }) = peer
 let connected_at (Conn { connected_at; _ }) = connected_at
+let accepted_at (Conn { accepted_at; _ }) = accepted_at
 let close (Conn { socket; _ }) = Net.Socket.close socket
 
 let send_file (Conn { socket; _ }) ?off ~len file =

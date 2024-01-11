@@ -40,17 +40,19 @@ and handle_connection : type s e. (s, e) conn_fn =
   | Switch (H { handler; state }) -> handle_connection conn handler state
   | _ -> ()
 
-let init transport socket peer buffer_size handler ctx =
+let init accepted_at transport socket peer buffer_size handler ctx =
   let[@warning "-8"] (Ok conn) =
-    Transport.handshake transport ~socket ~peer ~buffer_size
+    Transport.handshake transport ~accepted_at ~socket ~peer ~buffer_size
   in
   trace (fun f -> f "Initialized conn: %a" Net.Socket.pp socket);
   Fun.protect
     ~finally:(fun () -> Connection.close conn)
     (fun () -> handle_connection conn handler ctx)
 
-let start_link ~transport ~conn ~peer ~buffer_size ~handler ~ctx () =
+let start_link ~accepted_at ~transport ~conn ~peer ~buffer_size ~handler ~ctx ()
+    =
   let pid =
-    spawn_link (fun () -> init transport conn peer buffer_size handler ctx)
+    spawn_link (fun () ->
+        init accepted_at transport conn peer buffer_size handler ctx)
   in
   Ok pid

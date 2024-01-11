@@ -22,6 +22,7 @@ module Connection : sig
   val close : t -> unit
   val peer : t -> Net.Addr.stream_addr
   val connected_at : t -> Ptime.t
+  val accepted_at : t -> Ptime.t
 end
 
 (** An Atacama Handler determines how every connection handled by Atacama will
