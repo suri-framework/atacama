@@ -14,12 +14,21 @@ type t =
       socket : Net.Socket.stream_socket;
       peer : Net.Addr.stream_addr;
       default_read_size : int;
+      connected_at : Ptime.t;
     }
       -> t
 
 let make ?(protocol = None) ~reader ~writer ~buffer_size ~socket ~peer () =
   Conn
-    { reader; writer; protocol; socket; peer; default_read_size = buffer_size }
+    {
+      reader;
+      writer;
+      protocol;
+      socket;
+      peer;
+      default_read_size = buffer_size;
+      connected_at = Ptime_clock.now ();
+    }
 
 let negotiated_protocol (Conn t) = t.protocol
 
@@ -49,6 +58,7 @@ and do_send (Conn { writer; _ } as conn) bufs len =
     do_send conn bufs len
 
 let peer (Conn { peer; _ }) = peer
+let connected_at (Conn { connected_at; _ }) = connected_at
 let close (Conn { socket; _ }) = Net.Socket.close socket
 
 let send_file (Conn { socket; _ }) ?off ~len file =
