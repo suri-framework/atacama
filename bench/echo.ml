@@ -11,6 +11,7 @@ module Echo = struct
     let pp_err fmt `noop = Format.fprintf fmt "Noop"
 
     let handle_data data socket state =
+      Logger.info (fun f -> f "%a" Bytestring.pp data);
       match Atacama.Connection.send socket data with
       | Ok _bytes -> Continue (state + 1)
       | Error _ -> Close state

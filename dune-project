@@ -22,7 +22,7 @@
    (mdx (and :with-test (>= "2.3.1")))
    (ocaml (>= "5.1"))
    (odoc (and :with-doc (>= "2.2.2")))
-   (riot (>= "0.0.7"))
+   (riot (>= "0.0.8"))
    (telemetry (>= "0.0.1")))
  (tags
   (socket "socket pool" tcp riot)))
