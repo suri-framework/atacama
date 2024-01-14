@@ -65,11 +65,12 @@ let connected_at (Conn { connected_at; _ }) = connected_at
 let accepted_at (Conn { accepted_at; _ }) = accepted_at
 
 let close (Conn { socket; accepted_at; _ }) =
-  Net.Socket.close socket;
+  Net.Tcp_stream.close socket;
   info (fun f ->
       let end_time = Ptime_clock.now () in
       let diff = Ptime.diff end_time accepted_at in
       f "Connection handled in %a" Ptime.Span.pp diff)
 
-let send_file (Conn { socket; _ }) ?off ~len file =
-  File.send ?off ~len file socket
+let send_file (Conn _) ?off:_ ~len:_ _file =
+  (* File.send ?off ~len file socket *)
+  Ok ()

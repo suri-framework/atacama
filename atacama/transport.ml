@@ -34,7 +34,7 @@ module Tcp = struct
 
   let handshake ~accepted_at ~config ~socket ~peer ~buffer_size =
     let reader, writer =
-      Net.Socket.
+      Net.Tcp_stream.
         ( to_reader ~timeout:config.receive_timeout socket,
           to_writer ~timeout:config.send_timeout socket )
     in

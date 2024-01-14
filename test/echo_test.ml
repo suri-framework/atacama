@@ -19,12 +19,12 @@ end
 
 let client server_port main =
   let addr = Net.Addr.(tcp loopback server_port) in
-  let conn = Net.Socket.connect addr |> Result.get_ok in
+  let conn = Net.Tcp_stream.connect addr |> Result.get_ok in
   Logger.debug (fun f -> f "Connected to server on %d" server_port);
   let buf = IO.Bytes.of_string "hello world" in
 
-  let reader = Net.Socket.to_reader conn in
-  let writer = Net.Socket.to_writer conn in
+  let reader = Net.Tcp_stream.to_reader conn in
+  let writer = Net.Tcp_stream.to_writer conn in
 
   let rec send_loop n =
     sleep 0.001;
@@ -36,9 +36,8 @@ let client server_port main =
       | Error (`Closed | `Timeout | `Process_down) ->
           Logger.debug (fun f -> f "connection closed")
       | Error (`Unix_error (ENOTCONN | EPIPE)) -> send_loop n
-      | Error (`Unix_error unix_err) ->
-          Logger.error (fun f ->
-              f "client unix error %s" (Unix.error_message unix_err));
+      | Error err ->
+          Logger.error (fun f -> f "client error %a" IO.pp_err err);
           send_loop (n - 1)
   in
   send_loop 10_000;
@@ -52,9 +51,8 @@ let client server_port main =
     | Error (`Closed | `Timeout | `Process_down) ->
         Logger.error (fun f -> f "Server closed the connection");
         0
-    | Error (`Unix_error unix_err) ->
-        Logger.error (fun f ->
-            f "client unix error %s" (Unix.error_message unix_err));
+    | Error err ->
+        Logger.error (fun f -> f "client error %a" IO.pp_err err);
         0
   in
   let len = recv_loop () in

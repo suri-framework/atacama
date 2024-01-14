@@ -15,11 +15,10 @@ type ('ctx, 'err) state = {
 }
 
 let rec accept_loop state =
-  match Net.Socket.accept state.socket with
+  match Net.Tcp_listener.accept state.socket with
   | Ok (conn, peer) -> handle_conn state conn peer
   | Error err ->
-      Logger.error (fun f ->
-          f "Error accepting connection: %a" Net.Socket.pp_err err)
+      Logger.error (fun f -> f "Error accepting connection: %a" IO.pp_err err)
 
 and handle_conn state conn peer =
   let accepted_at = Ptime_clock.now () in

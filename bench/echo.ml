@@ -11,7 +11,6 @@ module Echo = struct
     let pp_err fmt `noop = Format.fprintf fmt "Noop"
 
     let handle_data data socket state =
-      Logger.info (fun f -> f "%a" Bytestring.pp data);
       match Atacama.Connection.send socket data with
       | Ok _bytes -> Continue (state + 1)
       | Error _ -> Close state
@@ -22,4 +21,4 @@ module Echo = struct
     Atacama.start_link ~port:2113 (module Server) 0
 end
 
-let () = Riot.start ~apps:[ (module Logger); (module Echo) ] ()
+let () = Riot.start ~workers:0 ~apps:[ (module Logger); (module Echo) ] ()

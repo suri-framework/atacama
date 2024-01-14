@@ -16,7 +16,7 @@ type ('ctx, 'err) state = {
 let start_link { acceptors; buffer_size; handler; initial_ctx; port; transport }
     =
   let opts =
-    Net.Socket.
+    Net.Tcp_listener.
       {
         addr = Net.Addr.loopback;
         reuse_addr = true;
@@ -24,7 +24,7 @@ let start_link { acceptors; buffer_size; handler; initial_ctx; port; transport }
         backlog = 100;
       }
   in
-  let[@warning "-8"] (Ok socket) = Net.Socket.listen ~opts ~port () in
+  let[@warning "-8"] (Ok socket) = Net.Tcp_listener.bind ~opts ~port () in
   Logger.debug (fun f -> f "Listening on 0.0.0.0:%d" port);
   Telemetry_.listening socket;
   let child_specs =

@@ -5,12 +5,14 @@ module Connection : sig
 
   val send : t -> Bytestring.t -> (unit, [> `Closed ]) IO.io_result
 
+  (*
   val send_file :
     t ->
     ?off:int ->
     len:int ->
     [ `r ] File.file ->
     (int, [> `Closed ]) IO.io_result
+    *)
 
   val receive :
     ?limit:int ->

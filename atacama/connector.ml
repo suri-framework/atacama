@@ -14,11 +14,13 @@ let rec loop : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
   trace (fun f -> f "Receiving...: %a" Pid.pp (self ()));
   match Connection.receive conn with
+  | Ok zero when Bytestring.is_empty zero ->
+      Handler.handle_close handler conn ctx
   | Ok data -> handle_data data conn handler ctx
   | Error (`Timeout | `Process_down) ->
       error (fun f -> f "Error receiving data: timeout")
-  | Error ((`Closed | `Unix_error _) as err) ->
-      error (fun f -> f "Error receiving data: %a" Net.Socket.pp_err err)
+  | Error ((`Closed | `Unix_error _ | _) as err) ->
+      error (fun f -> f "Error receiving data: %a" IO.pp_err err)
 
 and handle_data : type s e. Bytestring.t -> (s, e) conn_fn =
  fun data conn handler ctx ->
