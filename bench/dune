@@ -4,6 +4,13 @@
  (libraries atacama))
 
 (executable
+ (name http_server)
+ (modules http_server)
+ (preprocess
+  (pps bytestring.ppx))
+ (libraries atacama))
+
+(executable
  (name echo_eio)
  (modules echo_eio)
  (libraries eio eio_main))
