@@ -10,6 +10,17 @@ type ('s, 'e) conn_fn =
   's ->
   unit
 
+type ('state, 'err) state = {
+  accepted_at : Ptime.t;
+  transport : Transport.t;
+  conn : Net.Socket.stream_socket;
+  buffer_size : int;
+  handler :
+    (module Handler.Intf with type error = 'err and type state = 'state);
+  peer : Net.Addr.stream_addr;
+  ctx : 'state;
+}
+
 let rec loop : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
   trace (fun f -> f "Receiving...: %a" Pid.pp (self ()));
@@ -42,7 +53,8 @@ and handle_connection : type s e. (s, e) conn_fn =
   | Switch (H { handler; state }) -> handle_connection conn handler state
   | _ -> ()
 
-let init accepted_at transport socket peer buffer_size handler ctx =
+let init
+    { accepted_at; transport; conn = socket; peer; buffer_size; handler; ctx } =
   let[@warning "-8"] (Ok conn) =
     Transport.handshake transport ~accepted_at ~socket ~peer ~buffer_size
   in
@@ -51,10 +63,13 @@ let init accepted_at transport socket peer buffer_size handler ctx =
     ~finally:(fun () -> Connection.close conn)
     (fun () -> handle_connection conn handler ctx)
 
-let start_link ~accepted_at ~transport ~conn ~peer ~buffer_size ~handler ~ctx ()
-    =
-  let pid =
-    spawn_link (fun () ->
-        init accepted_at transport conn peer buffer_size handler ctx)
-  in
+let start_link state =
+  let pid = spawn_link (fun () -> init state) in
   Ok pid
+
+let child_spec ~accepted_at ~transport ~conn ~buffer_size ~handler ~peer ~ctx ()
+    =
+  let state =
+    { accepted_at; transport; conn; buffer_size; handler; peer; ctx }
+  in
+  Supervisor.child_spec start_link state
