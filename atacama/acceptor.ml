@@ -12,6 +12,8 @@ type ('ctx, 'err) state = {
   transport : Transport.t;
   initial_ctx : 'ctx;
   handler : (module Handler.Intf with type state = 'ctx and type error = 'err);
+  max_connections : int;
+  open_connections : int;
 }
 
 let rec accept_loop state =
@@ -21,6 +23,7 @@ let rec accept_loop state =
       Logger.error (fun f -> f "Error accepting connection: %a" IO.pp_err err)
 
 and handle_conn state conn peer =
+  wait_for_open_slot state @@ fun () ->
   let accepted_at = Ptime_clock.now () in
   Logger.trace (fun f -> f "Accepted connection: %a" Net.Addr.pp peer);
   Telemetry_.accepted_connection peer;
@@ -29,7 +32,14 @@ and handle_conn state conn peer =
       ~buffer_size:state.buffer_size ~handler:state.handler ~peer
       ~ctx:state.initial_ctx ()
   in
-  accept_loop state
+  accept_loop { state with open_connections = state.open_connections + 1 }
+
+and wait_for_open_slot state fn =
+  let open_connections = state.open_connections + 1 in
+  if open_connections < state.max_connections then fn ()
+  else (
+    sleep 0.100;
+    wait_for_open_slot state fn)
 
 let start_link state =
   let pid =
@@ -39,7 +49,17 @@ let start_link state =
   in
   Ok pid
 
-let child_spec ~socket ?(buffer_size = 1_024 * 50) transport handler initial_ctx
-    =
-  let state = { socket; buffer_size; transport; handler; initial_ctx } in
+let child_spec ~socket ?(max_connections = 1024) ?(buffer_size = 1_024 * 50)
+    transport handler initial_ctx =
+  let state =
+    {
+      socket;
+      buffer_size;
+      transport;
+      handler;
+      initial_ctx;
+      max_connections;
+      open_connections = 0;
+    }
+  in
   Supervisor.child_spec start_link state
