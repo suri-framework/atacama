@@ -66,7 +66,7 @@ let accepted_at (Conn { accepted_at; _ }) = accepted_at
 
 let close (Conn { socket; accepted_at; _ }) =
   Net.Tcp_stream.close socket;
-  info (fun f ->
+  debug (fun f ->
       let end_time = Ptime_clock.now () in
       let diff = Ptime.diff end_time accepted_at in
       f "Connection handled in %a" Ptime.Span.pp diff)

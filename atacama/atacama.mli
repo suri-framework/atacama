@@ -135,6 +135,7 @@ end
 val start_link :
   port:int ->
   ?acceptors:int ->
+  ?max_connections:int ->
   ?buffer_size:int ->
   ?transport:Transport.t ->
   (module Handler.Intf with type state = 'state and type error = 'err) ->

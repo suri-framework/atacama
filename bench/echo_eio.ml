@@ -1,6 +1,6 @@
 open Eio.Std
 
-let addr = `Tcp (Eio.Net.Ipaddr.V4.loopback, 2112)
+let addr = `Tcp (Eio.Net.Ipaddr.V4.loopback, 2115)
 
 module Server = struct
   module Read = Eio.Buf_read

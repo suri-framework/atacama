@@ -32,10 +32,9 @@ and handle_conn conn_sup state conn peer =
   in
 
   match Dynamic_supervisor.start_child conn_sup child_spec with
-  | Ok _pid -> 
-      accept_loop conn_sup state
+  | Ok _pid -> accept_loop conn_sup state
   | Error `Max_children ->
-      error (fun f -> f "too many conns, waiting...");
+      debug (fun f -> f "too many conns, waiting...");
       sleep 0.100;
       handle_conn conn_sup state conn peer
 
@@ -48,15 +47,7 @@ let start_link state =
   in
   Ok pid
 
-let child_spec ~socket ?(buffer_size = 1_024 * 50)
-    transport handler initial_ctx =
-  let state =
-    {
-      socket;
-      buffer_size;
-      transport;
-      handler;
-      initial_ctx;
-    }
-  in
+let child_spec ~socket ?(buffer_size = 1_024 * 50) transport handler initial_ctx
+    =
+  let state = { socket; buffer_size; transport; handler; initial_ctx } in
   Supervisor.child_spec start_link state
