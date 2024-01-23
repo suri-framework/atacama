@@ -35,6 +35,9 @@ module rec R : sig
 
     val handle_shutdown : Connection.t -> state -> (state, error) handler_result
     val handle_timeout : Connection.t -> state -> (state, error) handler_result
+
+    val handle_message :
+      Message.t -> Connection.t -> state -> (state, error) handler_result
   end
 end = struct
   type t =
@@ -71,6 +74,9 @@ end = struct
 
     val handle_shutdown : Connection.t -> state -> (state, error) handler_result
     val handle_timeout : Connection.t -> state -> (state, error) handler_result
+
+    val handle_message :
+      Message.t -> Connection.t -> state -> (state, error) handler_result
   end
 end
 
@@ -84,6 +90,7 @@ module Default = struct
   let handle_error err _sock state = Error (state, err)
   let handle_shutdown _sock _state = Ok
   let handle_timeout _sock _state = Ok
+  let handle_message _msg _conn state = Continue state
 end
 
 let pp_err (type s e) (module H : Intf with type state = s and type error = e)
@@ -102,3 +109,7 @@ let handle_data (type s e)
     (module H : Intf with type state = s and type error = e) data sock
     (state : s) =
   H.handle_data data sock state
+
+let handle_message (type s e)
+    (module H : Intf with type state = s and type error = e) data conn (state : s) =
+  H.handle_message data conn state

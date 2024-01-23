@@ -23,13 +23,21 @@ type ('state, 'err) state = {
 
 let rec loop : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
+  match receive ~after:10L () with
+  | exception Receive_timeout -> try_receive conn handler ctx
+  | msg -> (
+      match Handler.handle_message handler msg conn ctx with
+      | Continue ctx -> loop conn handler ctx
+      | _ -> error (fun f -> f "unexpected value"))
+
+and try_receive : type s e. (s, e) conn_fn =
+ fun conn handler ctx ->
   trace (fun f -> f "Receiving...: %a" Pid.pp (self ()));
   match Connection.receive conn with
   | Ok zero when Bytestring.is_empty zero ->
       Handler.handle_close handler conn ctx
   | Ok data -> handle_data data conn handler ctx
-  | exception Syscall_timeout
-  | Error (`Timeout | `Process_down) ->
+  | (exception Syscall_timeout) | Error (`Timeout | `Process_down) ->
       error (fun f -> f "Error receiving data: timeout")
   | Error ((`Closed | `Unix_error _ | _) as err) ->
       error (fun f -> f "Error receiving data: %a" IO.pp_err err)

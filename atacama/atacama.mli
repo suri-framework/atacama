@@ -83,6 +83,9 @@ module rec Handler : sig
 
     val handle_shutdown : Connection.t -> state -> (state, error) handler_result
     val handle_timeout : Connection.t -> state -> (state, error) handler_result
+
+    val handle_message :
+      Message.t -> Connection.t -> state -> (state, error) handler_result
   end
 
   (** Default handler methods. Useful for bootstrapping new handlers incrementally.
@@ -114,6 +117,9 @@ module rec Handler : sig
 
     val handle_timeout :
       Connection.t -> 'state -> ('state, 'error) handler_result
+
+    val handle_message :
+      Message.t -> Connection.t -> 'state -> ('state, 'error) handler_result
   end
 end
 
