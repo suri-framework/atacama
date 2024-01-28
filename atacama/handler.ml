@@ -111,5 +111,6 @@ let handle_data (type s e)
   H.handle_data data sock state
 
 let handle_message (type s e)
-    (module H : Intf with type state = s and type error = e) data conn (state : s) =
+    (module H : Intf with type state = s and type error = e) data conn
+    (state : s) =
   H.handle_message data conn state
