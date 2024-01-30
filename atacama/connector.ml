@@ -24,7 +24,7 @@ type ('state, 'err) state = {
 let rec loop : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
   trace (fun f -> f "receiving process message...");
-  match receive ~after:1L () with
+  match receive ~after:42L () with
   | exception Receive_timeout ->
       trace (fun f -> f "message timeout, trying receive...");
       try_receive conn handler ctx
@@ -41,6 +41,8 @@ and try_receive : type s e. (s, e) conn_fn =
   | Ok zero when Bytestring.is_empty zero ->
       Handler.handle_close handler conn ctx
   | Ok data -> handle_data data conn handler ctx
+  | Error (`Timeout | `Process_down) ->
+      error (fun f -> f "Error receiving data: timeout")
   | Error ((`Closed | `Unix_error _ | _) as err) ->
       error (fun f -> f "Error receiving data: %a" IO.pp_err err)
 

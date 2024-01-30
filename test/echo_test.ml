@@ -64,7 +64,7 @@ let () =
   Riot.run @@ fun () ->
   let _ = Logger.start () |> Result.get_ok in
   Logger.set_log_level (Some Info);
-  let port = 2112 in
+  let port = 3003 in
   let main = self () in
   let _server = Atacama.start_link ~port (module Echo_server) 0 in
   let _client = spawn (fun () -> client port main) in

@@ -19,10 +19,12 @@ module Http = struct
   end
 
   let start () =
-    (* Runtime.set_log_level (Some Debug); *)
-    (* Logger.set_log_level (Some Debug); *)
+    Runtime.set_log_level (Some Debug);
+    (* Logger.set_log_level (Some Trace); *)
     (* Runtime.Stats.start ~every:2_000_000L (); *)
-    Atacama.start_link ~buffer_size:(1024 * 50) ~port:2113 (module Server) 0
+    Atacama.start_link ~acceptors:1 ~buffer_size:(1024 * 50) ~port:2113
+      (module Server)
+      0
 end
 
 let () = Riot.start ~apps:[ (module Logger); (module Http) ] ()
