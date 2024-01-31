@@ -15,6 +15,7 @@ module Connection : sig
     *)
 
   val receive :
+    ?timeout:int64 ->
     ?limit:int ->
     ?read_size:int ->
     t ->

@@ -35,12 +35,13 @@ let make ?(protocol = None) ~accepted_at ~reader ~writer ~buffer_size ~socket
 
 let negotiated_protocol (Conn t) = t.protocol
 
-let receive ?(limit = 1024) ?read_size (Conn { default_read_size; reader; _ }) =
+let receive ?timeout ?(limit = 1024) ?read_size (Conn { default_read_size; reader; _ }) =
   let read_size = Option.value read_size ~default:default_read_size in
   trace (fun f ->
       f "receive with read_size of %d (using limit=%d)" read_size limit);
   let capacity = Int.min limit read_size in
-  Bytestring.with_bytes ~capacity @@ fun buf -> IO.read ~buf reader
+  Bytestring.with_bytes ~capacity @@ fun buf -> IO.read ?timeout reader
+buf 
 
 let rec send conn buf =
   let bufs = Bytestring.to_iovec buf in

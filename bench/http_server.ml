@@ -20,7 +20,7 @@ module Http = struct
 
   let start () =
     Runtime.set_log_level (Some Debug);
-    (* Logger.set_log_level (Some Trace); *)
+    Logger.set_log_level (Some Info);
     (* Runtime.Stats.start ~every:2_000_000L (); *)
     Atacama.start_link ~acceptors:1 ~buffer_size:(1024 * 50) ~port:2113
       (module Server)
