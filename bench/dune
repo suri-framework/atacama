@@ -10,7 +10,7 @@
   (pps bytestring.ppx))
  (libraries atacama))
 
-(executable
- (name echo_eio)
- (modules echo_eio)
- (libraries eio eio_main))
+; (executable
+;  (name echo_eio)
+;  (modules echo_eio)
+;  (libraries eio eio_main))
