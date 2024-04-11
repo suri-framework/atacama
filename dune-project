@@ -6,7 +6,7 @@
 (generate_opam_files true)
 
 (source
- (github leostera/atacama))
+ (github suri-framework/atacama))
 
 (authors "Leandro Ostera <leandro@abstractmachines.dev>")
 
@@ -22,7 +22,7 @@
    (mdx (and :with-test (>= "2.3.1")))
    (ocaml (>= "5.1"))
    (odoc (and :with-doc (>= "2.2.2")))
-   (riot (>= "0.0.8"))
+   (riot (>= "0.0.1"))
    (telemetry (>= "0.0.1")))
  (tags
   (socket "socket pool" tcp riot)))

@@ -1,6 +1,26 @@
-# Changes
+# 0.0.5
 
-## 0.0.4
+* Bring up to latest Riot version – thanks @metame! :clap:
+
+* Introduce `handle_message` callback to allow connector processes to receive
+  out-of-band messages from other Riot processes
+
+* Introduce configurable transports with their own configruation 
+
+* Introduce configurable connection limits and a dynamic connection pool
+
+* Introduce SSL Transport
+
+* Introduce Connection Peer data including the address and port
+
+* Expose new connection measurements such as time the connection was accepted
+  (`accepted_at`) and time at which the connection was established (`connected_at`)
+
+* Move to bytestrings and iovecs
+
+* Default to not reusing ports
+
+# 0.0.4
 
 * Introduce Handler Switching – this lets a handler, at any point during the
   lifecycle, switch to a new handler and reinitizialize the connection.
@@ -23,18 +43,18 @@
 
 * Upgrade to Riot 0.0.7
 
-## 0.0.3
+# 0.0.3
 
 * Move example to use Riot Applications
 * Started reference projects for benchmarking
 * Log socket accept/receive errors
 * Always attempt to close a socket
 
-## 0.0.2
+# 0.0.2
 
 * Update to work with Riot 0.0.3
 
-## 0.0.1
+# 0.0.1
 
 First release includes:
 
