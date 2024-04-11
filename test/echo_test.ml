@@ -21,7 +21,7 @@ let client server_port main =
   let addr = Net.Addr.(tcp loopback server_port) in
   let conn = Net.Tcp_stream.connect addr |> Result.get_ok in
   Logger.debug (fun f -> f "Connected to server on %d" server_port);
-  let buf = IO.Bytes.of_string "hello world" in
+  let buf = "hello world" in
 
   let reader = Net.Tcp_stream.to_reader conn in
   let writer = Net.Tcp_stream.to_writer conn in
@@ -30,9 +30,9 @@ let client server_port main =
     sleep 0.001;
     if n = 0 then Logger.error (fun f -> f "client retried too many times")
     else
-      match IO.write_all ~buf writer with
+      match IO.write_all writer ~buf with
       | Ok () ->
-          Logger.debug (fun f -> f "Client sent %d bytes" (IO.Bytes.length buf))
+          Logger.debug (fun f -> f "Client sent %d bytes" (String.length buf))
       | Error (`Closed | `Timeout | `Process_down) ->
           Logger.debug (fun f -> f "connection closed")
       | Error (`Unix_error (ENOTCONN | EPIPE)) -> send_loop n
@@ -42,9 +42,9 @@ let client server_port main =
   in
   send_loop 10_000;
 
-  let buf = IO.Bytes.with_capacity 128 in
+  let buf = IO.Bytes.with_capacity 11 in
   let recv_loop () =
-    match IO.read ~buf reader with
+    match IO.read reader buf with
     | Ok bytes ->
         Logger.debug (fun f -> f "Client received %d bytes" bytes);
         bytes
@@ -68,7 +68,7 @@ let () =
   let main = self () in
   let _server = Atacama.start_link ~port (module Echo_server) 0 in
   let _client = spawn (fun () -> client port main) in
-  match receive () with
+  match receive_any () with
   | Received "hello world" ->
       Logger.info (fun f -> f "net_test: OK");
       sleep 0.001;

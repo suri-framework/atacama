@@ -24,7 +24,7 @@ type ('state, 'err) state = {
 let rec loop : type s e. (s, e) conn_fn =
  fun conn handler ctx ->
   trace (fun f -> f "receiving process message...");
-  match receive ~after:500L () with
+  match receive_any ~after:500L () with
   | exception Receive_timeout ->
       trace (fun f -> f "message timeout, trying receive...");
       try_receive conn handler ctx
